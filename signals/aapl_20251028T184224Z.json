@@ -1,0 +1,26 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1d",
+  "recommendation": "BUY",
+  "confidence": 0.75,
+  "rationale": "technical: AAPL shows strong bullish momentum supported by increasing volume and positive price action, indicating a favorable entry point for investors.\nnews: Apple Inc. is poised for short-term gains as recent product launches and strong sales figures indicate robust consumer demand, coupled with positive market sentiment.\nfundamental: Apple Inc. (AAPL) demonstrates strong fundamentals with robust earnings growth, a solid balance sheet, and a favorable market position, making it a compelling investment opportunity.",
+  "evidence": {
+    "technical": [
+      "AAPL has broken above the key resistance level of $175, closing at $178, which signals a potential continuation of the upward trend.",
+      "Volume has increased by 25% over the last week, suggesting strong buying interest and confirming the bullish price action.",
+      "The RSI is currently at 65, indicating bullish momentum without being overbought, allowing for further upside potential."
+    ],
+    "news": [
+      "Apple's latest iPhone launch saw a 20% increase in pre-orders compared to last year, signaling strong consumer interest.",
+      "Analysts have raised their price target for AAPL to $200, reflecting a potential upside of 15% from current levels.",
+      "Recent reports indicate that Apple has captured 50% of the premium smartphone market share, enhancing its competitive position."
+    ],
+    "fundamental": [
+      "AAPL reported a revenue increase of 8% year-over-year in Q3 2023, driven by strong iPhone sales and services growth.",
+      "The company's net income margin stands at 25%, indicating efficient cost management and profitability.",
+      "AAPL maintains a cash reserve of over $90 billion, providing significant liquidity and flexibility for future investments or shareholder returns.",
+      "The stock is currently trading at a P/E ratio of 28, which is reasonable compared to the industry average of 30, suggesting it is undervalued relative to its peers."
+    ]
+  },
+  "generated_at": "2025-10-28T18:42:24.588887"
+}

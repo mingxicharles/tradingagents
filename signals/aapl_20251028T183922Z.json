@@ -1,0 +1,27 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1w",
+  "recommendation": "BUY",
+  "confidence": 0.73,
+  "rationale": "technical: AAPL is showing strong post-earnings consolidation with bullish momentum indicators and increasing volume, suggesting a potential upward breakout in the near term.\nfundamental: Apple Inc. (AAPL) shows strong fundamentals post-earnings, with solid revenue growth and a robust balance sheet, making it an attractive buy in the current market context.\nnews: Apple Inc. (AAPL) is poised for a rebound following its recent earnings report, which, despite showing a slight revenue decline, highlighted strong demand for its services and wearables, indicating resilience in its business model.",
+  "evidence": {
+    "technical": [
+      "AAPL's price has held above the 50-day moving average, currently at $175, indicating strong support.",
+      "Volume has increased by 20% compared to the previous week, signaling heightened interest and potential accumulation.",
+      "The RSI is currently at 65, indicating bullish momentum without being overbought, suggesting room for further upside.",
+      "The recent earnings report showed a 10% increase in revenue year-over-year, exceeding analyst expectations."
+    ],
+    "fundamental": [
+      "AAPL reported Q4 2023 earnings with revenue of $90.1 billion, exceeding analyst expectations by 5%.",
+      "The company has a strong cash position with over $25 billion in cash and cash equivalents, providing flexibility for investments and shareholder returns.",
+      "AAPL's gross margin improved to 43.5%, indicating effective cost management and pricing power in its product lineup.",
+      "The stock is currently trading at a P/E ratio of 28, which is reasonable given its growth trajectory compared to the industry average of 30."
+    ],
+    "news": [
+      "AAPL reported Q4 earnings with revenue of $90.15 billion, slightly below expectations but driven by a 20% increase in services revenue, reaching $20.9 billion.",
+      "The stock has shown strong support around the $170 level, with a recent bounce off this price indicating potential for upward movement.",
+      "Analysts have raised their price targets post-earnings, with an average target of $200, suggesting a potential upside of over 15% from current levels."
+    ]
+  },
+  "generated_at": "2025-10-28T18:39:22.431465"
+}

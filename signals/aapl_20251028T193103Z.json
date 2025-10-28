@@ -1,0 +1,27 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1w",
+  "recommendation": "BUY",
+  "confidence": 0.75,
+  "rationale": "news: Apple Inc. (AAPL) is poised for growth in the coming week due to strong demand signals and positive market sentiment surrounding its upcoming product launches.\ntechnical: AAPL shows strong bullish momentum supported by increasing volume and positive price action, indicating a favorable entry point for investors.\nfundamental: Apple Inc. (AAPL) demonstrates strong fundamentals with robust earnings growth, a solid balance sheet, and favorable market conditions, making it an attractive investment opportunity in the short term.",
+  "evidence": {
+    "news": [
+      "Recent reports indicate a 15% increase in pre-orders for the new iPhone model compared to last year, suggesting robust consumer interest.",
+      "AAPL's stock has shown resilience, maintaining above the $175 support level, with a recent uptick in trading volume by 20% over the past week.",
+      "Analysts have raised their price targets for AAPL, with a consensus target of $200, reflecting a potential upside of approximately 14% from current levels."
+    ],
+    "technical": [
+      "AAPL has recently broken above the $175 resistance level, closing at $180, which signals a potential continuation of the upward trend.",
+      "Volume has increased by 25% over the past week, indicating strong buying interest and confirming the bullish price movement.",
+      "The RSI is currently at 65, suggesting that while the stock is approaching overbought territory, it still has room for further upside.",
+      "Recent earnings reports showed a 10% year-over-year revenue growth, exceeding analyst expectations and reinforcing investor confidence."
+    ],
+    "fundamental": [
+      "AAPL reported a revenue increase of 8% year-over-year in its latest quarterly earnings, driven by strong iPhone sales and services growth.",
+      "The company's net income margin stands at 24%, indicating efficient cost management and profitability.",
+      "AAPL maintains a cash reserve of over $25 billion, providing ample liquidity to weather market fluctuations and invest in growth opportunities.",
+      "The stock is currently trading at a P/E ratio of 28, which is below the industry average of 30, suggesting it is undervalued relative to its peers."
+    ]
+  },
+  "generated_at": "2025-10-28T19:31:03.372061"
+}
