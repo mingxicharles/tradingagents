@@ -1,0 +1,27 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1d",
+  "recommendation": "BUY",
+  "confidence": 0.75,
+  "rationale": "technical: AAPL is showing strong bullish momentum supported by increasing volume and positive price action, indicating a favorable entry point for investors.\nnews: Apple Inc. (AAPL) is poised for short-term gains as recent market trends and product announcements indicate strong consumer demand and potential revenue growth.\nfundamental: Apple Inc. (AAPL) demonstrates strong fundamentals with robust earnings growth, a solid balance sheet, and a favorable market position, making it a compelling buy at current levels.",
+  "evidence": {
+    "technical": [
+      "AAPL has broken above the key resistance level of $175 with a closing price of $178, suggesting a continuation of upward momentum.",
+      "Volume has increased by 25% over the last week, indicating strong buying interest and confirming the bullish trend.",
+      "The RSI is currently at 65, suggesting that the stock is approaching overbought territory but still has room for further gains.",
+      "Recent earnings report showed a 10% increase in revenue year-over-year, exceeding analyst expectations and boosting investor confidence."
+    ],
+    "news": [
+      "AAPL shares have seen a 5% increase over the past week, outperforming the NASDAQ index, indicating positive market sentiment.",
+      "Recent reports show that iPhone 15 pre-orders have exceeded expectations, with a 20% increase compared to the iPhone 14 launch.",
+      "Analysts have raised their price targets for AAPL, with a consensus target of $200, reflecting a potential upside of 10% from current levels."
+    ],
+    "fundamental": [
+      "AAPL reported a 10% year-over-year increase in revenue for Q3 2023, reaching $83 billion, driven by strong iPhone sales and services growth.",
+      "The company maintains a healthy balance sheet with $25 billion in cash and equivalents, providing ample liquidity and flexibility for future investments.",
+      "AAPL's trailing P/E ratio of 28 is below the industry average of 30, suggesting it is undervalued relative to its peers.",
+      "The recent launch of new products, including the iPhone 15, is expected to drive further revenue growth in the upcoming quarters."
+    ]
+  },
+  "generated_at": "2025-10-28T18:51:03.831135"
+}

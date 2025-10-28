@@ -1,0 +1,13 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1w",
+  "recommendation": "BUY",
+  "confidence": 0.0,
+  "rationale": "fundamental: Unable to produce proposal: LLM request failed after 2 attempts\ntechnical: Unable to produce proposal: LLM request failed after 2 attempts\nnews: Unable to produce proposal: LLM request failed after 2 attempts",
+  "evidence": {
+    "fundamental": [],
+    "technical": [],
+    "news": []
+  },
+  "generated_at": "2025-10-28T17:44:51.399450"
+}

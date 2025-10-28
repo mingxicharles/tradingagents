@@ -1,0 +1,27 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1d",
+  "recommendation": "BUY",
+  "confidence": 0.75,
+  "rationale": "news: Apple Inc. (AAPL) is poised for short-term gains due to strong demand signals and positive market sentiment surrounding its upcoming product launches.\ntechnical: AAPL is showing strong bullish momentum with positive price action and increasing volume, indicating a potential upward trend in the near term.\nfundamental: Apple Inc. (AAPL) demonstrates strong fundamentals with robust earnings growth, a solid balance sheet, and favorable market conditions, making it a compelling buy opportunity.",
+  "evidence": {
+    "news": [
+      "Recent reports indicate a 15% increase in pre-orders for the new iPhone model compared to last year, suggesting robust consumer interest.",
+      "AAPL's stock has shown resilience, closing above the $175 resistance level, indicating bullish momentum.",
+      "Analysts have raised their price targets for AAPL, with an average target of $190, reflecting confidence in the company's growth trajectory."
+    ],
+    "technical": [
+      "AAPL has broken above the 50-day moving average, currently at $175, suggesting a bullish trend.",
+      "Volume has increased by 25% over the past week, indicating strong buying interest.",
+      "The RSI is currently at 65, approaching overbought territory but still showing momentum.",
+      "Recent earnings report exceeded expectations, with a 10% increase in revenue year-over-year."
+    ],
+    "fundamental": [
+      "AAPL reported a revenue increase of 8% year-over-year in Q3 2023, driven by strong iPhone sales and services growth.",
+      "The company's net income margin stands at 24%, indicating efficient cost management and profitability.",
+      "AAPL maintains a cash reserve of over $25 billion, providing ample liquidity for investments and shareholder returns.",
+      "The stock is currently trading at a P/E ratio of 28, which is below the industry average of 30, suggesting it is undervalued relative to peers."
+    ]
+  },
+  "generated_at": "2025-10-28T18:45:43.408379"
+}

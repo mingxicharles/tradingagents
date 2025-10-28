@@ -1,0 +1,28 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1d",
+  "recommendation": "BUY",
+  "confidence": 0.85,
+  "rationale": "news: AAPL has shown strong upward momentum with a significant price increase over the past month, indicating positive market sentiment. The recent price action suggests continued investor confidence, likely driven by favorable market conditions and potential upcoming product announcements.\nfundamental: Apple Inc. presents a strong investment opportunity due to its robust financial health, impressive profit margins, and favorable valuation metrics compared to its growth prospects.\ntechnical: AAPL shows strong bullish momentum with multiple indicators confirming upward price action. The price is above key moving averages, and the MACD indicates bullish momentum. The recent price action suggests a continuation of the uptrend.",
+  "evidence": {
+    "news": [
+      "1-day change: +2.28%",
+      "5-day change: +2.51%",
+      "30-day change: +13.57%",
+      "Current volume: 44,888,200, which is 81.8% of the average volume."
+    ],
+    "fundamental": [
+      "P/E Ratio: 40.82, indicating a premium valuation but justified by strong growth potential in the technology sector.",
+      "Profit Margin: 24.30%, showcasing efficient cost management and strong profitability.",
+      "Total Revenue: $408.62B, reflecting significant scale and market presence in the consumer electronics industry.",
+      "Gross Margin: 46.68%, indicating strong pricing power and operational efficiency."
+    ],
+    "technical": [
+      "Current price of $268.81 is above the 20-day SMA of $255.75 and the 50-day SMA of $244.89, indicating a strong bullish trend.",
+      "MACD line at 5.01 is above the signal line at 4.29, with a histogram of 0.72, confirming bullish momentum.",
+      "RSI at 62.25 indicates that the stock is not overbought, allowing for further upside potential.",
+      "Price has recently broken above the upper Bollinger Band at $268.00, suggesting strong upward momentum."
+    ]
+  },
+  "generated_at": "2025-10-28T22:12:15.083870"
+}

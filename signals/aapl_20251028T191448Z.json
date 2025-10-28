@@ -1,0 +1,27 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1d",
+  "recommendation": "BUY",
+  "confidence": 0.75,
+  "rationale": "technical: AAPL is showing strong bullish momentum with positive price action and increasing volume, indicating a favorable environment for upward movement.\nnews: Apple Inc. (AAPL) is poised for short-term gains as recent product launches and strong sales figures indicate robust consumer demand, alongside positive market sentiment.\nfundamental: Apple Inc. (AAPL) demonstrates strong fundamentals with robust earnings growth, a solid balance sheet, and favorable market positioning, making it a compelling buy opportunity.",
+  "evidence": {
+    "technical": [
+      "AAPL has recently broken above the resistance level of $175, suggesting a continuation of the upward trend.",
+      "Volume has increased by 25% over the last week, indicating strong buying interest and confirming the price breakout.",
+      "The RSI is currently at 65, suggesting that the stock is approaching overbought territory but still has room for further gains.",
+      "The MACD has crossed above the signal line, indicating a bullish momentum shift."
+    ],
+    "news": [
+      "AAPL's recent quarterly earnings report showed a 10% year-over-year increase in revenue, surpassing analyst expectations.",
+      "The launch of the iPhone 15 series has generated significant pre-order interest, with reports indicating a 20% increase in initial sales compared to the previous model.",
+      "Market analysts have raised their price targets for AAPL, with the consensus target now at $200, reflecting a potential upside of 15% from current levels."
+    ],
+    "fundamental": [
+      "AAPL reported a revenue increase of 8% year-over-year in Q3 2023, driven by strong iPhone sales and services growth.",
+      "The company's net income margin stands at 24%, indicating efficient cost management and profitability.",
+      "AAPL maintains a cash position of over $25 billion, providing ample liquidity to weather economic downturns and invest in growth initiatives.",
+      "The stock is currently trading at a P/E ratio of 28, which is reasonable compared to the industry average of 30, suggesting it is undervalued."
+    ]
+  },
+  "generated_at": "2025-10-28T19:14:48.429053"
+}

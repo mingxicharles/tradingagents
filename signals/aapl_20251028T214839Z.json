@@ -1,0 +1,25 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1d",
+  "recommendation": "BUY",
+  "confidence": 0.75,
+  "rationale": "fundamental: Apple Inc. is showing strong financial performance and positive momentum in its stock price, making it an attractive buy at the current levels.\nnews: AAPL's recent price momentum and strong technical indicators suggest a bullish outlook. The stock has shown significant gains over the past month, indicating positive market sentiment.\ntechnical: AAPL shows strong bullish momentum with recent price action and technical indicators supporting further upside potential. The stock has consistently closed above key moving averages, indicating a solid upward trend.",
+  "evidence": {
+    "fundamental": [
+      "Current price of $268.81 is above the 20-day moving average of $255.75, indicating upward momentum.",
+      "The company has a robust profit margin of 24.30%, reflecting strong operational efficiency.",
+      "Analyst target price of $254.79 suggests potential upside from the current price, reinforcing a bullish outlook."
+    ],
+    "news": [
+      "Current price is $268.81, up 2.28% in the last day and 13.57% over the last 30 days.",
+      "Price is above the 20-day moving average (SMA20) of $255.75 by 5.11%.",
+      "Recent trading volume of 44,888,200 is 81.8% of the average volume, indicating healthy trading activity."
+    ],
+    "technical": [
+      "Current price is $268.81, which is above the 20-day SMA of $255.75 and the 50-day SMA of $244.89.",
+      "The MACD line at 5.01 is above the signal line at 4.29, indicating a bullish trend.",
+      "The 30-day price change of +13.57% demonstrates significant upward momentum."
+    ]
+  },
+  "generated_at": "2025-10-28T21:48:39.317712"
+}

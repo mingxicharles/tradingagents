@@ -1,0 +1,27 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1w",
+  "recommendation": "BUY",
+  "confidence": 0.85,
+  "rationale": "fundamental: Apple Inc. demonstrates strong financial health and competitive positioning, with solid revenue growth and high profit margins, making it an attractive investment opportunity.\nnews: Apple Inc. (AAPL) is experiencing a positive price momentum with a significant increase over the past month, supported by strong trading volume, indicating bullish sentiment in the market despite the absence of recent news events.\ntechnical: AAPL is showing strong bullish momentum with a recent price breakout and positive technical indicators. The alignment of moving averages and a bullish MACD crossover support a favorable outlook.",
+  "evidence": {
+    "fundamental": [
+      "P/E ratio of 40.82 suggests a premium valuation, but is supported by strong earnings growth and a profit margin of 24.30%.",
+      "Total revenue of $408.62B with a gross margin of 46.68% indicates robust operational efficiency.",
+      "Market cap of $3992.06B reflects Apple's dominant position in the consumer electronics sector.",
+      "Analyst target price of $254.79 is below the current price of $268.81, suggesting potential for continued growth."
+    ],
+    "news": [
+      "Current price is $268.81, reflecting a 5-day change of +2.51% and a 30-day change of +13.57%.",
+      "Current volume of 44,888,200 is 81.8% of the average volume of 54,893,548, suggesting sustained interest.",
+      "The stock closed at $268.81 on 2025-10-27, up from a low of $244.70 just 13 days prior on 2025-10-14."
+    ],
+    "technical": [
+      "Price closed at $268.81, breaking above the upper Bollinger Band at $268.00, indicating strong upward momentum.",
+      "MACD shows a bullish crossover with the MACD line at 5.01 above the signal line at 4.29, suggesting increasing bullish momentum.",
+      "Short-term moving averages (SMA10 at $257.15, SMA20 at $255.75, and SMA50 at $244.89) are all aligned bullishly, indicating a strong uptrend.",
+      "RSI at 62.25 indicates momentum without being overbought, allowing for further upside potential."
+    ]
+  },
+  "generated_at": "2025-10-28T22:22:34.423955"
+}

@@ -1,0 +1,25 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1d",
+  "recommendation": "BUY",
+  "confidence": 0.75,
+  "rationale": "fundamental: Apple Inc. (AAPL) demonstrates strong fundamentals with robust earnings growth, a solid balance sheet, and favorable market positioning, making it a compelling buy in the current market context.\ntechnical: AAPL shows strong bullish momentum supported by increasing volume and positive price action, indicating a favorable entry point for investors.\nnews: Apple Inc. (AAPL) is poised for upward momentum due to strong demand for its latest product releases and positive market sentiment surrounding its upcoming earnings report.",
+  "evidence": {
+    "fundamental": [
+      "AAPL reported a revenue increase of 8% year-over-year in Q3 2023, driven by strong iPhone sales and services growth.",
+      "The company's net income margin stands at 25%, indicating efficient cost management and profitability.",
+      "AAPL maintains a cash position of over $25 billion, providing ample liquidity to weather economic downturns and invest in growth opportunities."
+    ],
+    "technical": [
+      "AAPL has broken above the key resistance level of $175 with a closing price of $178, suggesting a continuation of the upward trend.",
+      "Volume has increased by 25% over the past week, indicating strong buying interest and confirming the bullish price movement.",
+      "The RSI is currently at 65, indicating bullish momentum without being overbought, allowing for further upside potential."
+    ],
+    "news": [
+      "Recent reports indicate a 15% increase in pre-orders for the iPhone 15 compared to the iPhone 14 during the same period last year.",
+      "Analysts project AAPL's Q4 revenue to rise by 10% year-over-year, driven by robust sales in wearables and services.",
+      "AAPL's stock has shown resilience, maintaining above the $175 support level, with a recent uptick in trading volume by 20% over the past week."
+    ]
+  },
+  "generated_at": "2025-10-28T21:48:44.847018"
+}

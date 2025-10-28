@@ -1,0 +1,27 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1d",
+  "recommendation": "BUY",
+  "confidence": 0.75,
+  "rationale": "news: Apple Inc. (AAPL) is poised for a short-term rally driven by strong demand for its latest product releases and positive market sentiment following recent earnings reports.\ntechnical: AAPL is showing strong bullish momentum with recent price action indicating a potential breakout above key resistance levels. Volume trends support this upward movement, suggesting increased buying interest.\nfundamental: Apple Inc. (AAPL) demonstrates strong fundamentals with robust earnings growth, a solid balance sheet, and favorable market positioning, making it a compelling buy opportunity.",
+  "evidence": {
+    "news": [
+      "AAPL reported a 10% increase in quarterly revenue, surpassing analyst expectations, which indicates robust consumer demand.",
+      "The stock has shown resilience, bouncing back from a recent low of $140, currently trading around $150, suggesting bullish momentum.",
+      "Analysts have raised their price targets for AAPL, with the consensus now at $165, reflecting confidence in the company's growth trajectory."
+    ],
+    "technical": [
+      "AAPL has broken above the $175 resistance level with a closing price of $178, indicating a bullish breakout.",
+      "Recent trading sessions have seen a 25% increase in volume compared to the 20-day average, signaling strong buying interest.",
+      "The RSI is currently at 65, indicating bullish momentum without being overbought, suggesting room for further upside.",
+      "MACD has crossed above the signal line, confirming the bullish trend and indicating potential for continued upward movement."
+    ],
+    "fundamental": [
+      "AAPL reported a revenue increase of 8% year-over-year in Q3 2023, driven by strong iPhone sales and services growth.",
+      "The company maintains a healthy cash position with over $25 billion in cash and cash equivalents, providing flexibility for investments and shareholder returns.",
+      "AAPL's P/E ratio stands at 28, which is competitive compared to the industry average of 30, indicating potential for further upside.",
+      "The latest earnings report showed a net income margin of 24%, reflecting efficient cost management and strong pricing power."
+    ]
+  },
+  "generated_at": "2025-10-28T19:30:32.248051"
+}
