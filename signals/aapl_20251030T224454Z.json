@@ -1,0 +1,21 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1d",
+  "recommendation": "BUY",
+  "confidence": 0.57,
+  "rationale": "news: AAPL is showing strong upward momentum with significant price appreciation and increased trading volume, indicating positive market sentiment despite the lack of recent news. The stock has gained 4.93% in one day and 14.44% over the past month, suggesting strong investor interest.\ntechnical: AAPL shows strong bullish momentum with a significant price increase and high trading volume, indicating a potential continuation of the uptrend. The price is above key moving averages, suggesting a favorable technical setup for the next day.",
+  "evidence": {
+    "news": [
+      "Current Price: $287.48, with a 1-day change of +4.93%",
+      "30-day price change of +14.44% indicates strong upward momentum.",
+      "Current volume of 94,562,640 is 150.7% of the average volume of 62,756,860, showing heightened trading activity."
+    ],
+    "technical": [
+      "Current price: $287.48, which is +4.93% in the last day and +14.44% over the last 30 days, indicating strong upward momentum.",
+      "Volume is at 94,562,640, which is 150.7% of the average volume, suggesting strong buying interest.",
+      "Price is above both the 20-day MA ($279.91) and the 50-day MA ($271.91), confirming a bullish trend.",
+      "The last trading day closed at $287.48, which is near the recent high of $296.09, indicating potential for further upward movement."
+    ]
+  },
+  "generated_at": "2025-10-30T22:44:54.743334"
+}

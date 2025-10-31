@@ -12,6 +12,12 @@ from ..dataflows.yfinance_tools import (
     get_company_info,
     get_recent_news,
 )
+from ..dataflows.local_data import (
+    get_stock_price_data_local,
+    get_technical_indicators_local,
+    get_company_info_local,
+    get_recent_news_local,
+)
 
 
 class JsonDataAwareAgent(DataAwareAgent, JsonResearchAgent):
@@ -19,7 +25,7 @@ class JsonDataAwareAgent(DataAwareAgent, JsonResearchAgent):
     pass
 
 
-def build_agents(client: LLMClient, configs: list[AgentConfig], use_real_data: bool = True) -> Dict[str, JsonResearchAgent]:
+def build_agents(client: LLMClient, configs: list[AgentConfig], use_real_data: bool = True, use_offline_data: bool = False) -> Dict[str, JsonResearchAgent]:
     """
     Factory for configured research agents.
     
@@ -27,6 +33,7 @@ def build_agents(client: LLMClient, configs: list[AgentConfig], use_real_data: b
         client: LLM client
         configs: Agent configurations
         use_real_data: Whether to use real data (default True)
+        use_offline_data: Whether to use offline/local dataset instead of yfinance (default False)
     
     Returns:
         Dictionary of configured agents
@@ -38,22 +45,36 @@ def build_agents(client: LLMClient, configs: list[AgentConfig], use_real_data: b
             for config in configs
         }
     
+    # Choose data source
+    if use_offline_data:
+        # Use offline/local data
+        get_price = get_stock_price_data_local
+        get_indicators = get_technical_indicators_local
+        get_company = get_company_info_local
+        get_news = get_recent_news_local
+    else:
+        # Use yfinance (online)
+        get_price = get_stock_price_data
+        get_indicators = get_technical_indicators
+        get_company = get_company_info
+        get_news = get_recent_news
+    
     # Configure data tools for each agent
     agents = {}
     
     for config in configs:
         if config.name == "technical":
             # Technical analyst: price data + technical indicators
-            data_tools = [get_stock_price_data, get_technical_indicators]
+            data_tools = [get_price, get_indicators]
         elif config.name == "fundamental":
             # Fundamental analyst: company info + price data
-            data_tools = [get_company_info, get_stock_price_data]
+            data_tools = [get_company, get_price]
         elif config.name == "news":
             # News analyst: news + price data
-            data_tools = [get_recent_news, get_stock_price_data]
+            data_tools = [get_news, get_price]
         else:
             # Default: basic price data
-            data_tools = [get_stock_price_data]
+            data_tools = [get_price]
         
         agents[config.name] = JsonDataAwareAgent(
             name=config.name,

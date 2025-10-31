@@ -59,7 +59,24 @@ class DataAwareAgent(ResearchAgent):
         for tool in self.data_tools:
             try:
                 # Call data tool (synchronous function)
-                data = tool(request.symbol)
+                # Pass trade_date if tool accepts it (check by inspecting signature)
+                import inspect
+                sig = inspect.signature(tool)
+                params = list(sig.parameters.keys())
+                
+                # Check if tool accepts trade_date parameter
+                if 'trade_date' in params:
+                    # Pass trade_date if the tool supports it
+                    if len(params) > 1:  # Has additional parameters beyond symbol
+                        # Check if days_back is also in params
+                        if 'days_back' in params:
+                            data = tool(request.symbol, days_back=90, trade_date=request.trade_date)
+                        else:
+                            data = tool(request.symbol, trade_date=request.trade_date)
+                    else:
+                        data = tool(request.symbol, trade_date=request.trade_date)
+                else:
+                    data = tool(request.symbol)
                 data_parts.append(data)
             except Exception as e:
                 data_parts.append(f"Data fetch failed ({tool.__name__}): {str(e)}")
@@ -77,10 +94,13 @@ class DataAwareAgent(ResearchAgent):
         # Add role-specific instructions
         role_instructions = self._get_role_specific_instructions()
         
+        date_info = f"Analysis date: {request.trade_date}" if request.trade_date else "Analysis date: Current date"
+        
         user_content = textwrap.dedent(
             f"""
             Focus ticker: {request.symbol}
             Horizon: {request.horizon}
+            {date_info}
             Market context: {request.market_context}
             
             === REAL MARKET DATA ===

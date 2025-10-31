@@ -14,6 +14,7 @@ class ResearchRequest:
     symbol: str
     horizon: str
     market_context: str = "general"
+    trade_date: Optional[str] = None  # Specific date to analyze (YYYY-MM-DD format), None means use current date
     created_at: datetime = field(default_factory=datetime.utcnow)
 
 

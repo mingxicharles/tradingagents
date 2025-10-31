@@ -7,9 +7,42 @@ import yfinance as yf
 import pandas as pd
 
 
+def _parse_trade_date(trade_date: str) -> datetime:
+    """
+    Parse trade_date string with flexible format handling.
+    Supports both "2024-01-15" and "2024-1-15" formats.
+    
+    Args:
+        trade_date: Date string in YYYY-MM-DD format (with or without leading zeros)
+    
+    Returns:
+        Parsed datetime object
+    
+    Raises:
+        ValueError: If date cannot be parsed
+    """
+    # Try standard format first
+    try:
+        return datetime.strptime(trade_date, "%Y-%m-%d")
+    except ValueError:
+        pass
+    
+    # Try parsing manually (handles "2024-1-15" format)
+    try:
+        parts = trade_date.split('-')
+        if len(parts) == 3:
+            year, month, day = int(parts[0]), int(parts[1]), int(parts[2])
+            return datetime(year, month, day)
+    except (ValueError, IndexError):
+        pass
+    
+    raise ValueError(f"Invalid date format: {trade_date}. Expected YYYY-MM-DD or YYYY-M-D")
+
+
 def get_stock_price_data(
     symbol: str,
-    days_back: int = 90
+    days_back: int = 90,
+    trade_date: Optional[str] = None
 ) -> str:
     """
     Get stock price data (OHLCV)
@@ -17,19 +50,47 @@ def get_stock_price_data(
     Args:
         symbol: Stock ticker symbol (e.g., AAPL, MSFT)
         days_back: Number of days of historical data to fetch
+        trade_date: Specific date to analyze (YYYY-MM-DD format), None means use current date
     
     Returns:
         Formatted price data string
     """
     try:
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=days_back)
+        if trade_date:
+            try:
+                target_date = _parse_trade_date(trade_date)
+                # yfinance's end parameter is exclusive, so we need end_date = target_date + 1 day
+                end_date = target_date + timedelta(days=1)
+            except ValueError:
+                # If date parsing fails, fall back to current date
+                target_date = datetime.now()
+                end_date = target_date + timedelta(days=1)
+        else:
+            target_date = datetime.now()
+            end_date = target_date + timedelta(days=1)
+        
+        start_date = end_date - timedelta(days=days_back + 5)  # Extra buffer to ensure we get enough data
         
         ticker = yf.Ticker(symbol.upper())
         data = ticker.history(start=start_date, end=end_date)
         
+        # Filter data to only include dates up to and including the target_date (if specified)
+        if trade_date:
+            # Convert target_date to date for comparison (ignore time)
+            target_date_only = target_date.date()
+            # Filter data to only include rows up to target_date
+            data = data[data.index.date <= target_date_only]
+            # If no data found on exact date, try to find the most recent trading day before target_date
+            if data.empty:
+                # Try getting data up to target_date + a few days to find the last trading day
+                extended_end = target_date + timedelta(days=5)
+                extended_data = ticker.history(start=start_date, end=extended_end)
+                extended_data = extended_data[extended_data.index.date <= target_date_only]
+                if not extended_data.empty:
+                    data = extended_data
+        
         if data.empty:
-            return f"Unable to fetch data for {symbol}, possibly invalid ticker symbol."
+            return f"Unable to fetch data for {symbol} for date {trade_date if trade_date else 'current date'}, possibly invalid ticker symbol or non-trading day."
         
         # Remove timezone info
         if data.index.tz is not None:
@@ -65,9 +126,16 @@ def get_stock_price_data(
         price_change_30d_str = f"{price_change_30d:+.2f}%" if price_change_30d is not None else "N/A"
         
         # Build report
+        actual_end_date = data.index[-1].date() if not data.empty else target_date.date()
+        actual_last_trading_date = data.index[-1].strftime('%Y-%m-%d') if not data.empty else 'N/A'
+        date_note = ""
+        if trade_date and actual_last_trading_date != trade_date:
+            date_note = f"\nNote: {trade_date} was not a trading day. Using most recent trading day: {actual_last_trading_date}"
+        
         report = f"""
 === {symbol.upper()} Price Data ===
-Date Range: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}
+Analysis Date: {target_date.strftime('%Y-%m-%d')}{date_note}
+Data Range: {data.index[0].strftime('%Y-%m-%d') if not data.empty else 'N/A'} to {actual_end_date}
 
 Current Price: ${current_price:.2f}
 
@@ -100,7 +168,8 @@ Last 10 Trading Days:
 
 def get_technical_indicators(
     symbol: str,
-    days_back: int = 90
+    days_back: int = 90,
+    trade_date: Optional[str] = None
 ) -> str:
     """
     Calculate technical indicators
@@ -108,19 +177,47 @@ def get_technical_indicators(
     Args:
         symbol: Stock ticker symbol
         days_back: Number of days of historical data
+        trade_date: Specific date to analyze (YYYY-MM-DD format), None means use current date
     
     Returns:
         Technical indicators analysis string
     """
     try:
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=days_back)
+        if trade_date:
+            try:
+                target_date = _parse_trade_date(trade_date)
+                # yfinance's end parameter is exclusive, so we need end_date = target_date + 1 day
+                end_date = target_date + timedelta(days=1)
+            except ValueError:
+                # If date parsing fails, fall back to current date
+                target_date = datetime.now()
+                end_date = target_date + timedelta(days=1)
+        else:
+            target_date = datetime.now()
+            end_date = target_date + timedelta(days=1)
+        
+        start_date = end_date - timedelta(days=days_back + 5)  # Extra buffer to ensure we get enough data
         
         ticker = yf.Ticker(symbol.upper())
         data = ticker.history(start=start_date, end=end_date)
         
+        # Filter data to only include dates up to and including the target_date (if specified)
+        if trade_date:
+            # Convert target_date to date for comparison (ignore time)
+            target_date_only = target_date.date()
+            # Filter data to only include rows up to target_date
+            data = data[data.index.date <= target_date_only]
+            # If no data found on exact date, try to find the most recent trading day before target_date
+            if data.empty:
+                # Try getting data up to target_date + a few days to find the last trading day
+                extended_end = target_date + timedelta(days=5)
+                extended_data = ticker.history(start=start_date, end=extended_end)
+                extended_data = extended_data[extended_data.index.date <= target_date_only]
+                if not extended_data.empty:
+                    data = extended_data
+        
         if data.empty:
-            return f"Unable to fetch data for {symbol}."
+            return f"Unable to fetch data for {symbol} for date {trade_date if trade_date else 'current date'}."
         
         # Calculate moving averages
         data['SMA_10'] = data['Close'].rolling(window=10).mean()

@@ -15,6 +15,7 @@ from .config_api import validate_api_setup
 async def execute(
     request: ResearchRequest,
     use_real_data: bool = True,
+    use_offline_data: bool = False,
     api_key: Optional[str] = None
 ) -> Dict[str, Any]:
     """
@@ -40,11 +41,16 @@ async def execute(
     
     client = build_client()
     configs = default_agent_configs()
-    agents = build_agents(client, configs, use_real_data=use_real_data)
+    
+    # Check for offline data flag  
+    use_offline = use_offline_data
+    
+    agents = build_agents(client, configs, use_real_data=use_real_data, use_offline_data=use_offline)
 
     orchestrator = TradingOrchestrator(
         agents=agents,
         agent_configs=configs,
+        supervisor_client=client,
     )
     graph = orchestrator.build_graph()
     app = graph.compile()
@@ -68,6 +74,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Time horizon for the analysis (default: 1d)",
     )
     parser.add_argument(
+        "--date",
+        type=str,
+        default=None,
+        help="Specific date to analyze (YYYY-MM-DD format, e.g., 2024-01-15). If not provided, uses current date.",
+    )
+    parser.add_argument(
         "--context",
         default="general market conditions",
         help="Market context or scenario guidance for agents.",
@@ -76,6 +88,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--no-real-data",
         action="store_true",
         help="Disable real data fetching (agents will rely on LLM knowledge only)",
+    )
+    parser.add_argument(
+        "--offline-data",
+        action="store_true",
+        help="Use offline/local dataset instead of yfinance (requires generate_offline_data.py)",
     )
     parser.add_argument(
         "--api-key",
@@ -124,9 +141,12 @@ def main(argv: list[str] | None = None) -> None:
         print(f"✓ API key configured")
     
     use_real_data = not args.no_real_data
+    use_offline_data = args.offline_data
     
     if use_real_data:
-        print(f"✓ Analyzing {args.symbol} with real market data")
+        date_info = f" on {args.date}" if args.date else ""
+        data_source = "offline dataset" if use_offline_data else "real market data"
+        print(f"✓ Analyzing {args.symbol} with {data_source}{date_info}")
     else:
         print(f"⚠ Analyzing {args.symbol} using LLM knowledge only (no real data)")
     
@@ -134,10 +154,11 @@ def main(argv: list[str] | None = None) -> None:
         symbol=args.symbol.upper(),
         horizon=args.horizon,
         market_context=args.context,
+        trade_date=args.date,
     )
     
     try:
-        result = asyncio.run(execute(request, use_real_data=use_real_data, api_key=args.api_key))
+        result = asyncio.run(execute(request, use_real_data=use_real_data, use_offline_data=use_offline_data, api_key=args.api_key))
         decision: DecisionDTO = result["decision"]
     except RuntimeError as e:
         print(f"\n❌ Error: {e}")

@@ -1,0 +1,22 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1w",
+  "recommendation": "BUY",
+  "confidence": 0.55,
+  "rationale": "news: AAPL is showing strong upward momentum with a significant price increase over the past month, supported by positive market sentiment despite the absence of recent news. The stock's performance indicates a bullish trend, making it a favorable investment opportunity.\ntechnical: AAPL shows strong bullish momentum with multiple technical indicators confirming an upward trend. The price is above key moving averages, and the MACD indicates bullish momentum, suggesting further upside potential in the upcoming week.",
+  "evidence": {
+    "news": [
+      "1-day change: +0.26%",
+      "5-day change: +4.35%",
+      "30-day change: +12.85%",
+      "Current price: $269.70, which is above the 20-day MA of $257.18"
+    ],
+    "technical": [
+      "Current price of $269.70 is above the 20-day SMA of $257.18 and the 50-day SMA of $246.43, indicating a strong upward trend.",
+      "MACD line at 5.88 is above the signal line at 4.86, with a histogram of 1.02, confirming bullish momentum.",
+      "RSI at 67.16 indicates strong momentum without being overbought, allowing for further price appreciation.",
+      "Price has recently tested the upper Bollinger Band at $271.98, suggesting potential for a breakout if momentum continues."
+    ]
+  },
+  "generated_at": "2025-10-30T22:19:04.774071"
+}

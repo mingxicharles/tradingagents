@@ -1,0 +1,21 @@
+{
+  "symbol": "AAPL",
+  "horizon": "1w",
+  "recommendation": "BUY",
+  "confidence": 0.28,
+  "rationale": "news: Apple Inc. (AAPL) is experiencing a positive momentum with a notable price increase over the past month, supported by strong trading volume, indicating bullish sentiment in the market despite the absence of recent news headlines.\ntechnical: AAPL is currently experiencing a strong upward trend with bullish indicators, but the overbought RSI suggests a potential pullback in the near term. Caution is advised as the price approaches the upper Bollinger Band.",
+  "evidence": {
+    "news": [
+      "Current price: $271.40, reflecting a 14.09% increase over the last 30 days.",
+      "5-day price change: +4.55%, indicating a strong upward trend.",
+      "Current trading volume of 66,283,036 is significantly above the average volume of 54,506,878, suggesting heightened investor interest."
+    ],
+    "technical": [
+      "Current price: $271.40, above 20-day MA ($257.89) and 50-day MA ($247.34), indicating a strong bullish trend.",
+      "RSI at 83.89 indicates overbought conditions, suggesting a possible pullback.",
+      "MACD shows a bullish crossover with MACD line at 6.15 above the signal line at 5.02, indicating bullish momentum.",
+      "Volume ratio at 121.6% indicates strong buying interest, but the recent increase in volume may also signal exhaustion."
+    ]
+  },
+  "generated_at": "2025-10-30T22:23:37.108275"
+}

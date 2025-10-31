@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Tuple, TypedDict
+from typing import Dict, List, Literal, Optional, Tuple, TypedDict, Any, Mapping
 
 from langgraph.graph import END, StateGraph
 
 from .agents.base import AgentContext, ResearchAgent
 from .config import DEFAULT_MAX_DEBATE_ROUNDS, AgentConfig, default_agent_configs
 from .models import AgentProposal, DecisionDTO, DebateTranscript, PositionChange, ResearchRequest
+from .llm import LLMClient
 
 
 class TradingState(TypedDict, total=False):
@@ -21,6 +22,9 @@ class TradingState(TypedDict, total=False):
     decision: Optional[DecisionDTO]
     signal_path: Optional[Path]
     next_action: Optional[Literal["debate", "decision", "continue"]]
+    # LLM supervisor plan and selection
+    plan: Dict[str, Any]
+    selected_agents: List[str]
 
 
 class TradingOrchestrator:
@@ -33,6 +37,7 @@ class TradingOrchestrator:
         max_debate_rounds: int = DEFAULT_MAX_DEBATE_ROUNDS,
         retries: int = 2,
         signals_dir: Path | None = None,
+        supervisor_client: Optional[LLMClient] = None,
     ) -> None:
         self.agents = agents
         self.agent_configs = {config.name: config for config in agent_configs}
@@ -41,6 +46,13 @@ class TradingOrchestrator:
         self.signals_dir = signals_dir or Path("signals")
         # Basic equal weighting, overridable per config if needed.
         self.weights = {name: self.agent_configs[name].weight for name in self.agents}
+        # LLM supervisor (can reuse same client as agents)
+        self.supervisor_client = supervisor_client
+
+    # RL hook: placeholder for future RLHF integration
+    def record_feedback(self, reward: float, trajectory: Dict[str, Any]) -> None:
+        """Placeholder for RLHF feedback; replace with logging/storage as needed."""
+        _ = (reward, trajectory)
 
     def build_graph(self) -> StateGraph[TradingState]:
         """Build the LangGraph with explicit routing nodes.
@@ -96,6 +108,12 @@ class TradingOrchestrator:
     async def _orchestrator_node(self, state: TradingState) -> TradingState:
         """Fan out to all agents in parallel and gather proposals."""
         request = state["request"]
+        # Obtain supervisor plan (LLM) for dynamic selection and instructions
+        plan: Dict[str, Any] = state.get("plan", {})
+        if not plan:
+            plan = await self._supervisor_plan(request, state)
+        selected_agents: List[str] = plan.get("selected_agents") or list(self.agents.keys())
+        per_agent_instructions: Dict[str, str] = plan.get("per_agent_instructions", {})
         proposals = {}
         errors = {}
         
@@ -113,8 +131,17 @@ class TradingOrchestrator:
                     async with lock:
                         snapshot = dict(proposals)
                     context = AgentContext(snapshot)
-                    
-                    proposal = await agent.gather(request, context)
+                    # Inject minimal per-agent instruction by augmenting market_context
+                    instruction = per_agent_instructions.get(name, "")
+                    if instruction:
+                        req_for_agent = ResearchRequest(
+                            symbol=request.symbol,
+                            horizon=request.horizon,
+                            market_context=f"{request.market_context} | Supervisor: {instruction}",
+                        )
+                    else:
+                        req_for_agent = request
+                    proposal = await agent.gather(req_for_agent, context)
                     async with lock:
                         proposals[name] = proposal
                     return
@@ -137,12 +164,14 @@ class TradingOrchestrator:
                 proposals[name] = proposal
             errors[name] = last_error
         
-        # Execute all agents in parallel
-        await asyncio.gather(*(run_agent(name, agent) for name, agent in self.agents.items()))
+        # Execute only selected agents in parallel
+        await asyncio.gather(*(run_agent(name, agent) for name, agent in self.agents.items() if name in selected_agents))
         
         policy_flags = self._policy_checks(proposals)
         
         return {
+            "plan": plan,
+            "selected_agents": selected_agents,
             "proposals": proposals,
             "errors": errors,
             "policy_flags": policy_flags,
@@ -214,6 +243,53 @@ class TradingOrchestrator:
             raise RuntimeError("Decision missing before writing signal.")
         path = decision.write_signal(self.signals_dir)
         return {"signal_path": path}
+
+    async def _supervisor_plan(self, request: ResearchRequest, state: TradingState) -> Dict[str, Any]:
+        """Use LLM to choose agents and brief per-agent instructions.
+
+        Expected JSON keys:
+          - selected_agents: list[str]
+          - per_agent_instructions: dict[str, str]
+        """
+        if not self.supervisor_client:
+            return {"selected_agents": list(self.agents.keys()), "per_agent_instructions": {}}
+
+        system_prompt = (
+            "You are the Orchestrator Supervisor. Decide which agents to run and provide brief, actionable "
+            "instructions per agent. Only output compact JSON with keys: selected_agents, per_agent_instructions."
+        )
+        user_prompt = (
+            f"symbol={request.symbol}, horizon={request.horizon}, context={request.market_context}.\n"
+            f"available_agents={list(self.agents.keys())}. Keep minimal yet sufficient."
+        )
+        messages: List[Mapping[str, str]] = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+        try:
+            raw = await self.supervisor_client.retrying_complete(messages, max_tokens=400)
+        except Exception:
+            return {"selected_agents": list(self.agents.keys()), "per_agent_instructions": {}}
+
+        import json
+        plan: Dict[str, Any] = {"selected_agents": list(self.agents.keys()), "per_agent_instructions": {}}
+        try:
+            start = raw.find('{')
+            end = raw.rfind('}')
+            if start != -1 and end != -1 and end >= start:
+                raw_json = raw[start:end+1]
+                data = json.loads(raw_json)
+                if isinstance(data, dict):
+                    sel = data.get("selected_agents")
+                    ins = data.get("per_agent_instructions")
+                    if isinstance(sel, list) and all(isinstance(x, str) for x in sel):
+                        filtered = [s for s in sel if s in self.agents]
+                        plan["selected_agents"] = filtered or list(self.agents.keys())
+                    if isinstance(ins, dict):
+                        plan["per_agent_instructions"] = {k: str(v) for k, v in ins.items() if k in self.agents}
+        except Exception:
+            pass
+        return plan
 
     def _requires_debate(self, proposals: Dict[str, AgentProposal]) -> bool:
         actionable = {p.action.upper() for p in proposals.values() if not p.neutral}
