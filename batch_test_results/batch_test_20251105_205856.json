@@ -1,0 +1,78 @@
+{
+  "test_config": {
+    "csv_path": "default",
+    "symbol": null,
+    "max_tests": 5,
+    "total_tests": 5,
+    "timestamp": "20251105_205856"
+  },
+  "summary": {
+    "accuracy": 40.0,
+    "strong_accuracy": 40.0,
+    "total": 5,
+    "successful": 5,
+    "failed": 0
+  },
+  "results": [
+    {
+      "symbol": "AAPL",
+      "date": "2024-01-01",
+      "current_price": 180.0,
+      "next_price": 182.84,
+      "actual_return": 1.5777777777777797,
+      "prediction": "HOLD",
+      "confidence": 0.8,
+      "correct": false,
+      "strong_correct": false,
+      "rationale": "All analysts recommend holding AAPL due to the absence of significant news or momentum indicators that would justify a buy or sell action. The stock is currently stable within a narrow price range, an"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-01-02",
+      "current_price": 182.84,
+      "next_price": 182.45,
+      "actual_return": -0.21330124699191358,
+      "prediction": "HOLD",
+      "confidence": 0.55,
+      "correct": true,
+      "strong_correct": true,
+      "rationale": "Despite the technical analyst's strong bullish signal, the lack of significant news and fundamental data creates uncertainty. The news analyst's recommendation to hold, combined with the fundamental a"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-01-03",
+      "current_price": 182.45,
+      "next_price": 187.87,
+      "actual_return": 2.9706768977802227,
+      "prediction": "HOLD",
+      "confidence": 0.55,
+      "correct": false,
+      "strong_correct": false,
+      "rationale": "While the technical analyst indicates a bullish trend with strong momentum, the news and fundamental analysts suggest a cautious approach due to a lack of significant news and unclear valuation metric"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-01-04",
+      "current_price": 187.87,
+      "next_price": 190.61,
+      "actual_return": 1.4584553148453767,
+      "prediction": "HOLD",
+      "confidence": 0.65,
+      "correct": false,
+      "strong_correct": false,
+      "rationale": "Despite the strong bullish momentum indicated by the technical analysis, the lack of significant news and mixed fundamental metrics suggest a cautious approach. The technical analyst's high conviction"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-01-05",
+      "current_price": 190.61,
+      "next_price": 196.13,
+      "actual_return": 2.895965584177106,
+      "prediction": "BUY",
+      "confidence": 0.7,
+      "correct": true,
+      "strong_correct": true,
+      "rationale": "Despite mixed signals from analysts, the technical analysis indicates strong bullish momentum with a significant breakout above key resistance levels. The MACD indicators support this upward trend, su"
+    }
+  ]
+}

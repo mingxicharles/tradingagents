@@ -2,6 +2,7 @@
 Trading research multi-agent pipeline built on LangGraph.
 """
 
-from .run import main
+# Avoid importing run.py to prevent circular import issues
+# from .run import main
 
-__all__ = ["main"]
+__all__ = []

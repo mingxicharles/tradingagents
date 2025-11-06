@@ -366,3 +366,7 @@ def build_client() -> LLMClient:
         print(f"Model: {config.model}")
         print(f"API key: {_mask_key(config.api_key)}")
         return APILLMClient(config=config)
+
+
+# Alias for backward compatibility
+build_llm_client = build_client

@@ -1,86 +1,89 @@
-from __future__ import annotations
+"""
+Trading Agents Module
 
-from typing import Dict
+Simplified agents for LLM-driven controller architecture.
+"""
 
-from ..config import AgentConfig
+from .simple_agent import (
+    TradingAgent,
+    create_news_agent,
+    create_technical_agent,
+    create_fundamental_agent
+)
+
 from ..llm import LLMClient
-from .common import JsonResearchAgent
-from .data_agent import DataAwareAgent
-from ..dataflows.yfinance_tools import (
-    get_stock_price_data,
-    get_technical_indicators,
-    get_company_info,
-    get_recent_news,
-)
-from ..dataflows.local_data import (
-    get_stock_price_data_local,
-    get_technical_indicators_local,
-    get_company_info_local,
-    get_recent_news_local,
-)
+from typing import Dict, List, Callable
 
 
-class JsonDataAwareAgent(DataAwareAgent, JsonResearchAgent):
-    """Agent combining data fetching and JSON parsing"""
-    pass
-
-
-def build_agents(client: LLMClient, configs: list[AgentConfig], use_real_data: bool = True, use_offline_data: bool = False) -> Dict[str, JsonResearchAgent]:
+def build_agents(
+    llm_client: LLMClient,
+    use_real_data: bool = True,
+    use_offline_data: bool = False,
+    use_csv_data: bool = False
+) -> Dict[str, TradingAgent]:
     """
-    Factory for configured research agents.
+    Build all trading agents with appropriate data tools.
     
     Args:
-        client: LLM client
-        configs: Agent configurations
-        use_real_data: Whether to use real data (default True)
-        use_offline_data: Whether to use offline/local dataset instead of yfinance (default False)
-    
-    Returns:
-        Dictionary of configured agents
-    """
-    if not use_real_data:
-        # Use original agents without data tools
-        return {
-            config.name: JsonResearchAgent(config.name, client, config.system_prompt)
-            for config in configs
-        }
-    
-    # Choose data source
-    if use_offline_data:
-        # Use offline/local data
-        get_price = get_stock_price_data_local
-        get_indicators = get_technical_indicators_local
-        get_company = get_company_info_local
-        get_news = get_recent_news_local
-    else:
-        # Use yfinance (online)
-        get_price = get_stock_price_data
-        get_indicators = get_technical_indicators
-        get_company = get_company_info
-        get_news = get_recent_news
-    
-    # Configure data tools for each agent
-    agents = {}
-    
-    for config in configs:
-        if config.name == "technical":
-            # Technical analyst: price data + technical indicators
-            data_tools = [get_price, get_indicators]
-        elif config.name == "fundamental":
-            # Fundamental analyst: company info + price data
-            data_tools = [get_company, get_price]
-        elif config.name == "news":
-            # News analyst: news + price data
-            data_tools = [get_news, get_price]
-        else:
-            # Default: basic price data
-            data_tools = [get_price]
+        llm_client: LLM client for agents
+        use_real_data: Whether to use real market data
+        use_offline_data: Whether to use offline/local data instead of live data
+        use_csv_data: Whether to use CSV data for batch testing
         
-        agents[config.name] = JsonDataAwareAgent(
-            name=config.name,
-            client=client,
-            system_prompt=config.system_prompt,
-            data_tools=data_tools
-        )
+    Returns:
+        Dictionary of agent name to agent instance
+    """
+    # Import data tools
+    if use_real_data:
+        if use_csv_data:
+            # Use CSV data loader
+            from ..dataflows.csv_data_loader import (
+                get_stock_price_data_csv as get_price,
+                get_technical_indicators_csv as get_indicators,
+                get_company_info_csv as get_company,
+                get_recent_news_csv as get_news_data
+            )
+        elif use_offline_data:
+            # Use offline/local data
+            from ..dataflows.local_data import (
+                get_stock_price_data_local as get_price,
+                get_technical_indicators_local as get_indicators,
+                get_company_info_local as get_company,
+                get_recent_news_local as get_news_data
+            )
+        else:
+            # Use live yfinance data
+            from ..dataflows.yfinance_tools import (
+                get_stock_price_data as get_price,
+                get_technical_indicators as get_indicators,
+                get_company_info as get_company,
+                get_recent_news as get_news_data
+            )
+        
+        # Configure data tools for each agent type
+        news_tools = [get_news_data, get_price]
+        technical_tools = [get_price, get_indicators]
+        fundamental_tools = [get_company, get_price]
+    else:
+        # No real data - agents use knowledge base only
+        news_tools = []
+        technical_tools = []
+        fundamental_tools = []
+    
+    # Build agents
+    agents = {
+        "news": create_news_agent(llm_client, news_tools),
+        "technical": create_technical_agent(llm_client, technical_tools),
+        "fundamental": create_fundamental_agent(llm_client, fundamental_tools)
+    }
     
     return agents
+
+
+__all__ = [
+    "TradingAgent",
+    "build_agents",
+    "create_news_agent",
+    "create_technical_agent",
+    "create_fundamental_agent"
+]
