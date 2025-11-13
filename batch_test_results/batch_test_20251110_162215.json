@@ -1,0 +1,78 @@
+{
+  "test_config": {
+    "csv_path": "dataflows/data_cache/offline_trading_data_AAPL_2024-11-12_2025-01-11_clean.csv",
+    "symbol": null,
+    "max_tests": 5,
+    "total_tests": 5,
+    "timestamp": "20251110_162215"
+  },
+  "summary": {
+    "accuracy": 20.0,
+    "strong_accuracy": 20.0,
+    "total": 5,
+    "successful": 5,
+    "failed": 0
+  },
+  "results": [
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-12",
+      "current_price": 223.44,
+      "next_price": 224.32,
+      "actual_return": 0.3938417472252038,
+      "prediction": "SELL",
+      "confidence": 0.8,
+      "correct": false,
+      "strong_correct": false,
+      "rationale": "Despite the positive sentiment from the news analyst regarding AAPL's potential in the AI market, both the technical and fundamental analysts present strong evidence for a bearish outlook. The technic"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-13",
+      "current_price": 224.32,
+      "next_price": 227.41,
+      "actual_return": 1.3774964336661926,
+      "prediction": "BUY",
+      "confidence": 0.75,
+      "correct": true,
+      "strong_correct": true,
+      "rationale": "The recommendation to buy AAPL is primarily driven by the strong demand signals indicated by the news analyst, supported by robust earnings from Foxconn and Apple's ramp-up in production for upcoming "
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-14",
+      "current_price": 227.41,
+      "next_price": 224.2,
+      "actual_return": -1.411547425355089,
+      "prediction": "HOLD",
+      "confidence": 0.65,
+      "correct": false,
+      "strong_correct": false,
+      "rationale": "The decision to hold AAPL is based on the consensus among analysts, despite the conflicting signals. The fundamental analyst's strong sell recommendation highlights concerns about overvaluation, while"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-15",
+      "current_price": 224.2,
+      "next_price": 227.21,
+      "actual_return": 1.3425512934879658,
+      "prediction": "SELL",
+      "confidence": 0.8,
+      "correct": false,
+      "strong_correct": false,
+      "rationale": "The fundamental analyst has a strong conviction that AAPL is overvalued based on its high P/E ratio compared to sector peers and declining revenue growth prospects. Despite the neutral recommendations"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-18",
+      "current_price": 227.21,
+      "next_price": 227.47,
+      "actual_return": 0.11443158311693627,
+      "prediction": "SELL",
+      "confidence": 0.8,
+      "correct": false,
+      "strong_correct": false,
+      "rationale": "The fundamental analyst's recommendation to sell is supported by strong evidence of overvaluation, as indicated by AAPL's high P/E ratio compared to sector peers. Despite the neutral stance from the n"
+    }
+  ]
+}

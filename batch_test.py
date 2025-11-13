@@ -103,13 +103,13 @@ async def run_single_test(controller, test_case, verbose=False):
         
         if verbose:
             print(f"\nPrediction: {decision.recommendation} (confidence: {decision.confidence:.2%})")
-            print(f"Result: {'✓ CORRECT' if evaluation['correct'] else '✗ WRONG'}")
+            print(f"Result: {'[CORRECT]' if evaluation['correct'] else '[WRONG]'}")
             print(f"Rationale: {decision.rationale[:150]}...")
         
         return result
         
     except Exception as e:
-        print(f"\n✗ Error testing {symbol} on {date}: {str(e)}")
+        print(f"\n[ERROR] Error testing {symbol} on {date}: {str(e)}")
         return {
             "symbol": symbol,
             "date": date,
@@ -144,17 +144,17 @@ async def run_batch_test(
     # Validate API
     is_valid, message = validate_api_setup()
     if not is_valid:
-        print(f"\n❌ API not configured: {message}")
+        print(f"\n[ERROR] API not configured: {message}")
         return None
     
-    print(f"✓ API configured\n")
+    print(f"[OK] API configured\n")
     
     # Load CSV data
     print("Loading CSV data...")
     loader = get_csv_loader(csv_path)
     test_cases = loader.get_test_cases(symbol=symbol, max_cases=max_tests)
     
-    print(f"✓ Found {len(test_cases)} test cases")
+    print(f"[OK] Found {len(test_cases)} test cases")
     if symbol:
         print(f"  Filtered by symbol: {symbol}")
     if max_tests:
@@ -192,7 +192,7 @@ async def run_batch_test(
         verbose=False  # Individual test verbosity
     )
     
-    print("✓ Controller initialized\n")
+    print("[OK] Controller initialized\n")
     
     # Run tests
     print(f"Running {len(test_cases)} tests...")
@@ -205,7 +205,7 @@ async def run_batch_test(
         
         if not verbose:
             # Show progress
-            status = "✓" if result.get("correct", False) else "✗"
+            status = "[OK]" if result.get("correct", False) else "[X]"
             print(f"{status} {result['symbol']} {result['date']} - {result.get('prediction', 'ERROR')}", end="")
             if result.get('actual_return'):
                 print(f" (actual: {result['actual_return']:+.2f}%)")
@@ -292,7 +292,7 @@ async def run_batch_test(
                 "results": results
             }, f, indent=2, default=str)
         
-        print(f"\n✓ Results saved to: {results_file}")
+        print(f"\n[OK] Results saved to: {results_file}")
     
     print("\n" + "="*70)
     
@@ -324,7 +324,7 @@ def main():
         print("\n\nBatch test interrupted by user.")
         sys.exit(0)
     except Exception as e:
-        print(f"\n\n❌ Error: {str(e)}")
+        print(f"\n\n[ERROR] Error: {str(e)}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
@@ -332,4 +332,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 

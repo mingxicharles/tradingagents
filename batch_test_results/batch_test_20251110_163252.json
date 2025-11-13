@@ -1,0 +1,54 @@
+{
+  "test_config": {
+    "csv_path": "dataflows/data_cache/offline_trading_data_AAPL_2024-11-12_2025-01-11_clean.csv",
+    "symbol": null,
+    "max_tests": 3,
+    "total_tests": 3,
+    "timestamp": "20251110_163252"
+  },
+  "summary": {
+    "accuracy": 100.0,
+    "strong_accuracy": 66.66666666666666,
+    "total": 3,
+    "successful": 3,
+    "failed": 0
+  },
+  "results": [
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-12",
+      "current_price": 223.44,
+      "next_price": 224.32,
+      "actual_return": 0.3938417472252038,
+      "prediction": "BUY",
+      "confidence": 0.8,
+      "correct": true,
+      "strong_correct": false,
+      "rationale": "The recommendation to buy AAPL is supported by strong positive sentiment from both news and technical analysts, who highlight the potential for growth driven by AI market trends and favorable technica"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-13",
+      "current_price": 224.32,
+      "next_price": 227.41,
+      "actual_return": 1.3774964336661926,
+      "prediction": "BUY",
+      "confidence": 0.75,
+      "correct": true,
+      "strong_correct": true,
+      "rationale": "Despite the fundamental analyst's concerns regarding overvaluation, the strong performance of Foxconn and its implications for AAPL's supply chain and market position provide a compelling case for a b"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-14",
+      "current_price": 227.41,
+      "next_price": 224.2,
+      "actual_return": -1.411547425355089,
+      "prediction": "SELL",
+      "confidence": 0.8,
+      "correct": true,
+      "strong_correct": true,
+      "rationale": "The fundamental analyst's recommendation to SELL is supported by strong evidence of AAPL being overvalued relative to its growth prospects, as indicated by a significantly high P/E ratio compared to i"
+    }
+  ]
+}

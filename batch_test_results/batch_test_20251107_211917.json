@@ -1,0 +1,78 @@
+{
+  "test_config": {
+    "csv_path": "dataflows/data_cache/offline_trading_data_AAPL_2024-11-12_2025-01-11_clean.csv",
+    "symbol": null,
+    "max_tests": 5,
+    "total_tests": 5,
+    "timestamp": "20251107_211917"
+  },
+  "summary": {
+    "accuracy": 40.0,
+    "strong_accuracy": 40.0,
+    "total": 5,
+    "successful": 5,
+    "failed": 0
+  },
+  "results": [
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-12",
+      "current_price": 223.44,
+      "next_price": 224.32,
+      "actual_return": 0.3938417472252038,
+      "prediction": "HOLD",
+      "confidence": 0.65,
+      "correct": true,
+      "strong_correct": true,
+      "rationale": "The decision to hold AAPL is based on the consensus from the news and fundamental analysts, who both recommend holding the position due to the lack of significant news and the stock's current valuatio"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-13",
+      "current_price": 224.32,
+      "next_price": 227.41,
+      "actual_return": 1.3774964336661926,
+      "prediction": "HOLD",
+      "confidence": 0.75,
+      "correct": false,
+      "strong_correct": false,
+      "rationale": "All analysts recommend holding AAPL stock due to a lack of significant news, bearish technical indicators, and high valuation metrics. The consensus indicates that the current market conditions are no"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-14",
+      "current_price": 227.41,
+      "next_price": 224.2,
+      "actual_return": -1.411547425355089,
+      "prediction": "HOLD",
+      "confidence": 0.85,
+      "correct": false,
+      "strong_correct": false,
+      "rationale": "All analysts recommend a HOLD action based on the current market conditions, lack of significant news, and mixed technical indicators. The consensus reflects caution, indicating that while AAPL's rece"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-15",
+      "current_price": 224.2,
+      "next_price": 227.21,
+      "actual_return": 1.3425512934879658,
+      "prediction": "HOLD",
+      "confidence": 0.7,
+      "correct": false,
+      "strong_correct": false,
+      "rationale": "All analysts recommend a HOLD for AAPL, indicating a consensus on the cautious approach given the current market conditions. The lack of significant news, bearish technical indicators, and high valuat"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-18",
+      "current_price": 227.21,
+      "next_price": 227.47,
+      "actual_return": 0.11443158311693627,
+      "prediction": "HOLD",
+      "confidence": 0.6,
+      "correct": true,
+      "strong_correct": true,
+      "rationale": "All analysts recommend a HOLD action, reflecting a consensus on the cautious outlook for AAPL. The lack of significant news, mixed price movements, and technical indicators suggest that the stock is c"
+    }
+  ]
+}

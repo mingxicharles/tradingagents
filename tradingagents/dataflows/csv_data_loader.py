@@ -177,7 +177,11 @@ class CSVDataLoader:
         
         output = f"News for {symbol} (as of {date}):\n\n"
         
-        if pd.notna(current_data.get('title')) and current_data['title']:
+        # Check 'news' column first (from generate_offline_data_with_news.py)
+        if pd.notna(current_data.get('news')) and current_data['news']:
+            output += f"News: {current_data['news']}\n\n"
+        # Fallback to old format (title, source, sentiment)
+        elif pd.notna(current_data.get('title')) and current_data['title']:
             output += f"Headline: {current_data['title']}\n"
             if pd.notna(current_data.get('source')):
                 output += f"Source: {current_data['source']}\n"
@@ -280,4 +284,5 @@ def get_recent_news_csv(symbol: str, trade_date: str) -> str:
     """Get news from CSV"""
     loader = get_csv_loader()
     return loader.format_news_data(symbol, trade_date)
+
 

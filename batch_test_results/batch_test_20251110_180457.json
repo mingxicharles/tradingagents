@@ -1,0 +1,78 @@
+{
+  "test_config": {
+    "csv_path": "dataflows/data_cache/offline_trading_data_AAPL_2024-11-12_2025-01-11_clean.csv",
+    "symbol": null,
+    "max_tests": 5,
+    "total_tests": 5,
+    "timestamp": "20251110_180457"
+  },
+  "summary": {
+    "accuracy": 80.0,
+    "strong_accuracy": 60.0,
+    "total": 5,
+    "successful": 5,
+    "failed": 0
+  },
+  "results": [
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-12",
+      "current_price": 223.44,
+      "next_price": 224.32,
+      "actual_return": 0.3938417472252038,
+      "prediction": "BUY",
+      "confidence": 0.75,
+      "correct": true,
+      "strong_correct": false,
+      "rationale": "Despite conflicting signals from technical and fundamental analysts, the news analyst's strong buy recommendation, backed by Citi's reaffirmation of AAPL as a top pick and the potential growth in the "
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-13",
+      "current_price": 224.32,
+      "next_price": 227.41,
+      "actual_return": 1.3774964336661926,
+      "prediction": "BUY",
+      "confidence": 0.75,
+      "correct": true,
+      "strong_correct": true,
+      "rationale": "The news analyst's recommendation to buy AAPL is supported by strong evidence of increased demand for components, as indicated by Foxconn's earnings report. The positive momentum reflected in the curr"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-14",
+      "current_price": 227.41,
+      "next_price": 224.2,
+      "actual_return": -1.411547425355089,
+      "prediction": "SELL",
+      "confidence": 0.75,
+      "correct": true,
+      "strong_correct": true,
+      "rationale": "Both the technical and fundamental analysts provide strong evidence suggesting that AAPL is currently in a bearish trend, with the price below the 20-day SMA and a high P/E ratio indicating potential "
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-15",
+      "current_price": 224.2,
+      "next_price": 227.21,
+      "actual_return": 1.3425512934879658,
+      "prediction": "HOLD",
+      "confidence": 0.7,
+      "correct": false,
+      "strong_correct": false,
+      "rationale": "All three analysts recommend a HOLD action based on their evaluations of AAPL's current market conditions, technical indicators, and fundamental analysis. The stock is showing signs of bearish momentu"
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2024-11-18",
+      "current_price": 227.21,
+      "next_price": 227.47,
+      "actual_return": 0.11443158311693627,
+      "prediction": "HOLD",
+      "confidence": 0.7,
+      "correct": true,
+      "strong_correct": true,
+      "rationale": "All analysts have reached a consensus to hold AAPL, indicating a stable short-term outlook without significant momentum for buying or selling. The neutral sentiment in news and technical indicators, a"
+    }
+  ]
+}

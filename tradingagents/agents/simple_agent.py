@@ -52,27 +52,40 @@ class TradingAgent:
     async def analyze(
         self,
         request: AnalysisRequest,
-        specific_task: Optional[str] = None
+        specific_task: Optional[str] = None,
+        preloaded_data: Optional[str] = None,
+        dynamic_system_prompt: Optional[str] = None
     ) -> AgentProposal:
         """
         Perform analysis and return proposal.
         
+        NEW: Can receive preloaded data and dynamic system prompt from controller.
+        This allows controller to have full control over agent behavior.
+        
         Args:
             request: Analysis request
             specific_task: Optional specific task from controller
+            preloaded_data: Optional preloaded data from controller (avoids re-fetching)
+            dynamic_system_prompt: Optional dynamic system prompt from controller
             
         Returns:
             Agent's proposal with recommendation and evidence
         """
-        # Fetch data
-        data_context = await self._fetch_data(request)
+        # Use preloaded data if provided, otherwise fetch
+        if preloaded_data is not None:
+            data_context = preloaded_data
+        else:
+            data_context = await self._fetch_data(request)
         
         # Create analysis prompt
         prompt = self._create_analysis_prompt(request, data_context, specific_task)
         
+        # Use dynamic system prompt if provided, otherwise use default
+        system_prompt = dynamic_system_prompt if dynamic_system_prompt else self.system_prompt
+        
         # Get LLM analysis
         messages = [
-            {"role": "system", "content": self.system_prompt},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt}
         ]
         
@@ -188,7 +201,12 @@ Base your response on your area of expertise: {self.name} analysis."""
         data_context: str,
         specific_task: Optional[str]
     ) -> str:
-        """Create the analysis prompt."""
+        """
+        Create the analysis prompt.
+        
+        NOTE: This is a MINIMAL prompt that only defines output format.
+        All decision logic should come from the controller's dynamic system prompt.
+        """
         prompt = f"""Analyze {request.symbol} for a {request.horizon} investment decision.
 
 MARKET CONTEXT: {request.market_context or 'General market conditions'}
@@ -198,36 +216,19 @@ MARKET CONTEXT: {request.market_context or 'General market conditions'}
 AVAILABLE DATA:
 {data_context}
 
-ANALYSIS REQUIREMENTS:
-1. Recommendation: BUY, SELL, or HOLD
-2. Conviction: 0.0 to 1.0 based on evidence strength
-   - 0.8-1.0: Strong, well-supported signal
-   - 0.6-0.8: Moderate signal with good evidence
-   - 0.4-0.6: Weak signal or mixed indicators
-   - 0.0-0.4: Very weak or insufficient evidence
-3. Thesis: Your main argument (1-2 sentences)
-4. Evidence: Specific data points supporting your thesis (cite exact numbers)
-
-IMPORTANT - CONVICTION SCORING:
-- Base conviction on EVIDENCE STRENGTH, not default values
-- Strong technical breakout + volume = high conviction (0.75-0.85)
-- Single weak indicator = low conviction (0.45-0.60)
-- Missing key data = very low conviction (0.20-0.40)
-
 OUTPUT FORMAT (JSON):
 {{
     "action": "BUY/SELL/HOLD",
-    "conviction": e.g. 0.75,
-    "thesis": "Brief thesis statement",
+    "conviction": 0.0-1.0 (your confidence level),
+    "thesis": "Your main argument in 1-2 sentences",
     "evidence": [
-        "Specific evidence with exact numbers from data",
-        "Another piece of evidence",
+        "Specific evidence point 1 with exact data",
+        "Specific evidence point 2 with exact data",
         "..."
     ]
 }}
 
-Focus ONLY on your area of expertise ({self.name} analysis).
-Do NOT analyze aspects outside your domain."""
+Provide your analysis based on your expertise area ({self.name})."""
 
         return prompt
     
@@ -344,20 +345,8 @@ Do NOT analyze aspects outside your domain."""
 
 def create_news_agent(llm_client: LLMClient, data_tools: List[Callable]) -> TradingAgent:
     """Create a news and sentiment analyst."""
-    system_prompt = """You are a NEWS AND SENTIMENT ANALYST specializing in market-moving events.
-
-YOUR EXCLUSIVE FOCUS:
-- Recent news headlines and their market impact
-- Regulatory announcements and policy changes  
-- Sentiment shifts from news events
-- Macro economic news affecting the sector
-
-YOU MUST NOT ANALYZE:
-- Technical indicators (RSI, MACD, moving averages) - that's the technical analyst's job
-- Financial ratios (P/E, revenue, margins) - that's the fundamental analyst's job
-
-Base your recommendation ONLY on news sentiment and event analysis.
-Provide specific news sources and dates in your evidence."""
+    # Empty default - controller provides all instructions dynamically
+    system_prompt = "You are a trading analyst. Follow the controller's instructions."
 
     return TradingAgent(
         name="news",
@@ -369,20 +358,8 @@ Provide specific news sources and dates in your evidence."""
 
 def create_technical_agent(llm_client: LLMClient, data_tools: List[Callable]) -> TradingAgent:
     """Create a technical analyst."""
-    system_prompt = """You are a TECHNICAL ANALYST specializing in price action and indicators.
-
-YOUR EXCLUSIVE FOCUS:
-- Price trends, support/resistance levels
-- Technical indicators (RSI, MACD, Bollinger Bands, moving averages)
-- Volume patterns and momentum
-- Chart patterns and breakouts
-
-YOU MUST NOT ANALYZE:
-- News headlines or sentiment - that's the news analyst's job
-- Company fundamentals (earnings, revenue, P/E) - that's the fundamental analyst's job
-
-Base your recommendation ONLY on technical signals and price action.
-Cite specific indicator values and price levels in your evidence."""
+    # Empty default - controller provides all instructions dynamically
+    system_prompt = "You are a trading analyst. Follow the controller's instructions."
 
     return TradingAgent(
         name="technical",
@@ -394,20 +371,8 @@ Cite specific indicator values and price levels in your evidence."""
 
 def create_fundamental_agent(llm_client: LLMClient, data_tools: List[Callable]) -> TradingAgent:
     """Create a fundamental analyst."""
-    system_prompt = """You are a FUNDAMENTAL ANALYST specializing in company valuation and financials.
-
-YOUR EXCLUSIVE FOCUS:
-- Valuation metrics (P/E ratio, market cap, P/B ratio)
-- Financial health (revenue, earnings, profit margins, debt)
-- Business fundamentals and competitive position
-- Long-term growth prospects
-
-YOU MUST NOT ANALYZE:
-- Technical indicators (RSI, MACD, moving averages) - that's the technical analyst's job
-- Recent news or sentiment - that's the news analyst's job
-
-Base your recommendation ONLY on fundamental business metrics and valuation.
-Cite specific financial metrics and ratios in your evidence."""
+    # Empty default - controller provides all instructions dynamically
+    system_prompt = "You are a trading analyst. Follow the controller's instructions."
 
     return TradingAgent(
         name="fundamental",
@@ -415,4 +380,5 @@ Cite specific financial metrics and ratios in your evidence."""
         system_prompt=system_prompt,
         data_tools=data_tools
     )
+
 

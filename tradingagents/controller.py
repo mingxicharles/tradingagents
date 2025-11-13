@@ -185,13 +185,146 @@ Be strategic - you don't always need all three analysts."""
         
         return plan
     
+    async def _fetch_all_data_for_controller(self, request: AnalysisRequest) -> str:
+        """
+        Fetch all available data for controller to analyze.
+        Controller sees the data first to make intelligent decisions.
+        
+        Returns:
+            Formatted string with all available data
+        """
+        data_sections = []
+        
+        # Fetch from all agent tools
+        for agent_name, agent in self.agents.items():
+            if hasattr(agent, 'data_tools') and agent.data_tools:
+                for tool in agent.data_tools:
+                    try:
+                        import asyncio
+                        result = await asyncio.to_thread(
+                            tool,
+                            request.symbol,
+                            request.trade_date
+                        )
+                        data_sections.append(f"=== {tool.__name__} ===\n{result}\n")
+                    except Exception as e:
+                        data_sections.append(f"=== {tool.__name__} ===\nError: {str(e)}\n")
+        
+        return "\n".join(data_sections)
+    
+    async def _generate_dynamic_agent_instructions(
+        self,
+        plan: ControllerPlan,
+        all_data: str,
+        request: AnalysisRequest
+    ) -> Dict[str, Dict[str, str]]:
+        """
+        Controller analyzes data and generates COMPLETE instructions for each agent.
+        
+        NEW: Generates both system prompts AND specific tasks for each agent.
+        Controller has FULL control over agent behavior.
+        
+        Returns:
+            Dictionary of {agent_name: {
+                "system_prompt": "Dynamic role and guidelines",
+                "specific_task": "What to analyze in this case",
+                "data_focus": "Which parts of data to focus on"
+            }}
+        """
+        prompt = f"""You are the MASTER CONTROLLER analyzing {request.symbol} for a {request.horizon} investment decision.
+
+You have ALL the market data. Your job is to FULLY CONTROL your specialist agents by giving them:
+1. Their role and decision-making guidelines (system prompt)
+2. Specific analysis task
+3. Which data to focus on
+
+=== AVAILABLE DATA ===
+{all_data[:3000]}  
+
+=== SELECTED AGENTS ===
+{', '.join(plan.selected_agents)}
+
+TASK: For EVERY agent, you MUST generate COMPLETE instructions including:
+
+1. **System Prompt** (REQUIRED): Define their COMPLETE role, expertise, and ALL decision rules for THIS specific case
+   - Include their expertise area (news/technical/fundamental analyst)
+   - BE SPECIFIC: Reference actual data values (e.g., "RSI is at 37.38, which is oversold")
+   - PROVIDE CLEAR RULES: Tell them exactly what to do (e.g., "RSI < 40 suggests BUY, RSI > 70 suggests SELL")
+   - BE DIRECTIVE: Give clear thresholds based on the actual data you see
+   - PUSH FOR ACTION: Tell them when to recommend BUY/SELL vs HOLD based on data
+
+2. **Specific Task** (REQUIRED): What exact question they need to answer
+
+3. **Data Focus** (REQUIRED): Which specific metrics/news/indicators to prioritize
+
+EXAMPLE for a news agent if you see positive news:
+{{
+    "news": {{
+        "system_prompt": "You are a NEWS SENTIMENT ANALYST. Today's news shows a Citi upgrade maintaining AAPL as top pick. DECISION RULES: Strong positive analyst upgrades from reputable sources (like Citi) indicate BUY signal with conviction 0.7-0.8. Positive AI-related growth news adds +0.1 to conviction. Only recommend HOLD if news is mixed or neutral. Provide clear BUY/SELL recommendations when news is clearly positive/negative.",
+        "specific_task": "Evaluate the trading impact of Citi's reaffirmation and AI growth potential on short-term price action",
+        "data_focus": "Citi upgrade analysis, AI market expansion, analyst confidence"
+    }}
+}}
+
+OUTPUT FORMAT (JSON):
+{{
+    "news": {{
+        "system_prompt": "Complete role + decision rules for THIS case",
+        "specific_task": "Exact question to answer",
+        "data_focus": "What data to focus on"
+    }},
+    "technical": {{
+        "system_prompt": "Complete role + decision rules for THIS case with actual indicator values",
+        "specific_task": "Exact question to answer",  
+        "data_focus": "Which indicators to prioritize"
+    }},
+    "fundamental": {{
+        "system_prompt": "Complete role + decision rules for THIS case with actual valuation metrics",
+        "specific_task": "Exact question to answer",
+        "data_focus": "Which metrics to focus on"
+    }},
+    "controller_reasoning": "Your strategic reasoning for these specific instructions"
+}}
+
+CRITICAL REQUIREMENTS:
+- EVERY agent MUST have a complete system_prompt with decision rules
+- System prompts MUST reference actual data values you see above
+- System prompts MUST include clear BUY/SELL/HOLD criteria for this specific case
+- NO generic prompts - make them case-specific!
+Only include instructions for selected agents: {plan.selected_agents}"""
+
+        response = await self.llm.complete([
+            {"role": "system", "content": "You are the master controller with full authority over agent behavior."},
+            {"role": "user", "content": prompt}
+        ], max_tokens=1500)
+        
+        instructions = self._parse_json_response(response)
+        
+        if self.verbose:
+            print(f"[CONTROLLER] Generated complete agent instructions (system prompts + tasks)")
+            if "controller_reasoning" in instructions:
+                print(f"[CONTROLLER] Reasoning: {instructions['controller_reasoning'][:200]}...\n")
+        
+        return instructions
+    
     async def _execute_agents(
         self, 
         plan: ControllerPlan, 
         request: AnalysisRequest
     ) -> Dict[str, AgentProposal]:
         """
-        Execute agents according to plan.
+        Execute agents with FULL controller control.
+        
+        REVOLUTIONARY APPROACH:
+        1. Controller fetches ALL data ONCE
+        2. Controller analyzes data and generates COMPLETE instructions for each agent
+           - Dynamic system prompts (role + decision rules based on THIS data)
+           - Specific tasks
+           - Data focus areas
+        3. Agents receive: preloaded data + dynamic system prompt + specific task
+        4. Agents just execute instructions (become simple tools)
+        
+        Controller is now the TRUE brain!
         
         Args:
             plan: Analysis plan from LLM
@@ -200,15 +333,36 @@ Be strategic - you don't always need all three analysts."""
         Returns:
             Dictionary of agent proposals
         """
+        # Step 1: Fetch all data for controller (ONCE)
+        if self.verbose:
+            print(f"[CONTROLLER] Fetching all data...")
+        
+        all_data = await self._fetch_all_data_for_controller(request)
+        
+        # Step 2: Controller generates COMPLETE instructions (system prompts + tasks)
+        instructions = await self._generate_dynamic_agent_instructions(plan, all_data, request)
+        
+        # Step 3: Execute agents with full controller control
         results = {}
         
         if plan.execution_mode == "parallel" and self.enable_parallel:
-            # Execute all agents in parallel
+            # Execute all agents in parallel with controller instructions
             tasks = []
             for agent_name in plan.selected_agents:
                 agent = self.agents[agent_name]
-                specific_task = plan.agent_tasks.get(agent_name)
-                tasks.append(self._run_agent_safe(agent, request, specific_task))
+                agent_instructions = instructions.get(agent_name, {})
+                
+                # Extract controller-generated components
+                dynamic_system_prompt = agent_instructions.get("system_prompt")
+                specific_task = agent_instructions.get("specific_task")
+                
+                tasks.append(self._run_agent_safe(
+                    agent, 
+                    request, 
+                    specific_task=specific_task,
+                    preloaded_data=all_data,
+                    dynamic_system_prompt=dynamic_system_prompt
+                ))
             
             proposals = await asyncio.gather(*tasks)
             results = {p.agent: p for p in proposals if p is not None}
@@ -217,13 +371,23 @@ Be strategic - you don't always need all three analysts."""
             # Execute agents sequentially
             for agent_name in plan.selected_agents:
                 agent = self.agents[agent_name]
-                specific_task = plan.agent_tasks.get(agent_name)
-                proposal = await self._run_agent_safe(agent, request, specific_task)
+                agent_instructions = instructions.get(agent_name, {})
+                
+                dynamic_system_prompt = agent_instructions.get("system_prompt")
+                specific_task = agent_instructions.get("specific_task")
+                
+                proposal = await self._run_agent_safe(
+                    agent, 
+                    request, 
+                    specific_task=specific_task,
+                    preloaded_data=all_data,
+                    dynamic_system_prompt=dynamic_system_prompt
+                )
                 if proposal:
                     results[agent_name] = proposal
         
         if self.verbose:
-            print(f"[EXECUTION] Completed {len(results)} agent analyses\n")
+            print(f"[EXECUTION] Completed {len(results)} agent analyses with dynamic control\n")
         
         return results
     
@@ -231,23 +395,35 @@ Be strategic - you don't always need all three analysts."""
         self, 
         agent: Any, 
         request: AnalysisRequest,
-        specific_task: Optional[str] = None
+        specific_task: Optional[str] = None,
+        preloaded_data: Optional[str] = None,
+        dynamic_system_prompt: Optional[str] = None
     ) -> Optional[AgentProposal]:
         """
-        Run agent with error handling.
+        Run agent with full controller control and error handling.
+        
+        NEW: Passes preloaded data and dynamic system prompt to agent.
         
         Args:
             agent: Agent instance
             request: Analysis request
-            specific_task: Optional specific task for this agent
+            specific_task: Controller-generated specific task
+            preloaded_data: Controller-fetched data (avoids redundant fetching)
+            dynamic_system_prompt: Controller-generated system prompt
             
         Returns:
             Agent proposal or None if failed
         """
         try:
-            proposal = await agent.analyze(request, specific_task)
+            proposal = await agent.analyze(
+                request, 
+                specific_task=specific_task,
+                preloaded_data=preloaded_data,
+                dynamic_system_prompt=dynamic_system_prompt
+            )
             if self.verbose:
-                print(f"[{agent.name.upper()}] {proposal.action} (conviction: {proposal.conviction:.2f})")
+                mode = "DYNAMIC" if dynamic_system_prompt else "DEFAULT"
+                print(f"[{agent.name.upper()} - {mode}] {proposal.action} (conviction: {proposal.conviction:.2f})")
             return proposal
         except Exception as e:
             if self.verbose:
@@ -533,11 +709,16 @@ OUTPUT FORMAT (JSON):
     "reasoning_process": "How you arrived at this decision"
 }}
 
-Consider:
+CRITICAL DECISION PRINCIPLES:
+- Trust your analysts - they are experts who have analyzed the data
+- If 2+ analysts agree on BUY/SELL, strongly consider following their recommendation
 - Higher agreement = higher confidence
-- Conflicting signals = lower confidence  
-- Strong evidence from multiple sources = higher confidence
-- Analyst credibility and track record"""
+- HOLD should ONLY be used when analysts are genuinely split or all recommend HOLD
+- Don't default to HOLD just to be "safe" - that defeats the purpose of analysis
+- Conflicting signals = evaluate which analyst has stronger evidence, don't just pick HOLD
+- If one analyst says BUY with high conviction (>0.7) and others are neutral, lean BUY
+- If one analyst says SELL with high conviction (>0.7) and others are neutral, lean SELL
+- Strong evidence from multiple sources = higher confidence and should override neutrality"""
 
         response = await self.llm.complete([
             {"role": "system", "content": "You are an expert portfolio manager making final investment decisions."},
