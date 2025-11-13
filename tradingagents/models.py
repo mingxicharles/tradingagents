@@ -40,7 +40,7 @@ class AnalysisRequest:
 class AgentProposal:
     """
     Proposal from a single agent.
-    
+
     Attributes:
         agent: Agent name (e.g., 'news', 'technical', 'fundamental')
         action: Recommended action ('BUY', 'SELL', 'HOLD')
@@ -48,6 +48,8 @@ class AgentProposal:
         thesis: Main argument/thesis
         evidence: List of supporting evidence
         neutral: Whether this is a neutral/fallback proposal
+        caveats: List of risk warnings and caveats
+        raw_response: Optional raw LLM response text
     """
     agent: str
     action: str
@@ -55,11 +57,13 @@ class AgentProposal:
     thesis: str
     evidence: List[str] = field(default_factory=list)
     neutral: bool = False
-    
+    caveats: List[str] = field(default_factory=list)
+    raw_response: Optional[str] = None
+
     def __post_init__(self):
         self.action = self.action.upper()
         self.conviction = max(0.0, min(1.0, self.conviction))  # Clamp to [0, 1]
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return asdict(self)
@@ -114,10 +118,127 @@ class EvaluationResult:
 
 
 @dataclass
+class PositionChange:
+    """
+    Records how an agent's position changed during debate.
+
+    Attributes:
+        agent: Agent name
+        change_type: Type of change ('action', 'conviction', or 'both')
+        before_action: Action before debate
+        after_action: Action after debate
+        before_conviction: Conviction before debate
+        after_conviction: Conviction after debate
+        conviction_delta: Change in conviction
+    """
+    agent: str
+    change_type: str
+    before_action: str
+    after_action: str
+    before_conviction: float
+    after_conviction: float
+    conviction_delta: float
+
+
+@dataclass
+class DebateTranscript:
+    """
+    Transcript of a debate round.
+
+    Attributes:
+        summary: Text summary of debate
+        position_changes: List of position changes
+        agents_changed_action: Number of agents that changed their action
+        agents_changed_conviction: Number of agents that changed conviction
+        total_conviction_shift: Total absolute conviction change
+        converged: Whether debate converged to agreement
+    """
+    summary: str
+    position_changes: List[PositionChange] = field(default_factory=list)
+    agents_changed_action: int = 0
+    agents_changed_conviction: int = 0
+    total_conviction_shift: float = 0.0
+    converged: bool = False
+
+
+@dataclass
+class DecisionDTO:
+    """
+    Decision Data Transfer Object used by orchestrator.
+
+    This is the output format from the orchestrator workflow.
+    Simpler than FinalDecision, focused on immediate trading signal.
+
+    Attributes:
+        symbol: Stock ticker
+        horizon: Time horizon
+        recommendation: Final recommendation ('BUY', 'SELL', 'HOLD')
+        confidence: Confidence level (0.0 to 1.0)
+        rationale: Detailed explanation
+        evidence: Evidence map by agent
+        proposals: All agent proposals
+        debate: Optional debate transcript
+    """
+    symbol: str
+    horizon: str
+    recommendation: str
+    confidence: float
+    rationale: str
+    evidence: Dict[str, List[str]] = field(default_factory=dict)
+    proposals: Dict[str, AgentProposal] = field(default_factory=dict)
+    debate: Optional[DebateTranscript] = None
+
+    def __post_init__(self):
+        self.recommendation = self.recommendation.upper()
+        self.confidence = max(0.0, min(1.0, self.confidence))
+
+    def write_signal(self, output_dir: Path) -> Path:
+        """
+        Write decision to signal file.
+
+        Args:
+            output_dir: Directory to write signal
+
+        Returns:
+            Path to written signal file
+        """
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        timestamp = datetime.now().strftime("%Y%m%dT%H%M%SZ")
+        filename = f"{self.symbol.lower()}_{timestamp}.json"
+        filepath = output_dir / filename
+
+        # Create signal payload
+        signal = {
+            "symbol": self.symbol,
+            "horizon": self.horizon,
+            "recommendation": self.recommendation,
+            "confidence": self.confidence,
+            "rationale": self.rationale,
+            "evidence": self.evidence,
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+
+        # Add debate info if present
+        if self.debate:
+            signal["debate"] = {
+                "converged": self.debate.converged,
+                "agents_changed_action": self.debate.agents_changed_action,
+                "agents_changed_conviction": self.debate.agents_changed_conviction,
+                "total_conviction_shift": self.debate.total_conviction_shift,
+            }
+
+        with open(filepath, 'w') as f:
+            json.dump(signal, f, indent=2)
+
+        return filepath
+
+
+@dataclass
 class DebateRecord:
     """
     Record of debate process.
-    
+
     Attributes:
         rounds: Number of debate rounds
         history: Complete debate history
@@ -126,7 +247,7 @@ class DebateRecord:
     rounds: int = 0
     history: List[Dict[str, Any]] = field(default_factory=list)
     converged: bool = False
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return asdict(self)
@@ -355,6 +476,8 @@ def load_trajectory(filepath: Path) -> Trajectory:
     return trajectory
 
 
-# Aliases for backward compatibility
-DecisionDTO = FinalDecision
+# Aliases for backward compatibility and convenience
+# Note: DecisionDTO and FinalDecision are now separate classes!
+# - DecisionDTO: Used by orchestrator (simpler, for immediate signals)
+# - FinalDecision: Used by controller (richer, for RL training)
 ResearchRequest = AnalysisRequest
