@@ -1,42 +1,72 @@
-## Trading Agents LangGraph MVP
+## 🚀 Super-Intelligent Trading Agents System
 
-Runnable multi-agent trading research pipeline built with LangGraph. The system supervises three research agents (news, technical, fundamental) powered by Qwen models that can run either locally (via HuggingFace transformers) or through any OpenAI-compatible API. A dedicated orchestrator node coordinates fan-out, policy enforcement, optional debate, failure handling, and signal generation.
+**Production-ready multi-agent trading analysis platform** for secondary market stocks, powered by LangGraph, specialized AI agents, and advanced orchestration. Completely restructured with enterprise-grade configuration, logging, testing, and data abstraction.
 
-**Ideal for training**: Local model support enables easy fine-tuning and offline policy learning.
+### 🎯 Trading Universe
+- **Magnificent 7**: AAPL, MSFT, GOOGL, AMZN, NVDA, TSLA, META
+- **Additional 8**: JPM, BRK.B, V, UNH, PG, JNJ, WMT, XOM
 
-### Features
-- LangGraph `StateGraph` with an explicit orchestrator (supervisor) node managing routing, retries, debates, and termination.
-- Parallel agent fan-out using async gathers with evidence-required policy; missing evidence auto-downgrades proposals to neutral.
-- Optional single-round debate when agent actions conflict, producing a debate transcript.
-- Final `DecisionDTO` persisted to `signals/*.json`, designed as the fixed RL contract.
-- **Local model support**: Run Qwen models locally using HuggingFace transformers (ideal for training/fine-tuning).
-- Provider-agnostic API integration via environment-driven client (OpenRouter, OpenAI, etc.).
-- Small CLI (`run.py`) to trigger the entire pipeline end-to-end.
+### ✨ Key Features
 
-### Quick Start
+**Phase 1 & 2 Complete:**
+- ✅ **Unified Data Abstraction**: Single interface for live (yfinance), offline (parquet), and CSV data
+- ✅ **Centralized Configuration**: Type-safe Pydantic-based config with validation
+- ✅ **Structured Logging**: Production-ready JSON/colored logging with request tracking
+- ✅ **Testing Infrastructure**: pytest framework with fixtures and unit tests
+- ✅ **Bug-Free Models**: All missing classes and methods implemented
+- ✅ **Clean Architecture**: Consolidated from dual orchestration to single LangGraph pattern
+
+**Core Trading Features:**
+- 🤖 **Multi-Agent Analysis**: News, Technical, and Fundamental agents working in parallel
+- 🎯 **LangGraph Orchestration**: Sophisticated workflow with debate mechanism
+- 📊 **Evidence-Based Decisions**: Policy enforcement requiring evidence for recommendations
+- 💬 **Agent Debates**: Automatic conflict resolution through structured debates
+- 📈 **Technical Indicators**: RSI, MACD, Bollinger Bands, Moving Averages
+- 🔄 **Flexible LLM Support**: OpenAI, OpenRouter, or local models (Qwen)
+- 💾 **Signal Persistence**: JSON signals ready for backtesting/execution
+
+**Production-Ready:**
+- ⚙️ Environment-based configuration
+- 📝 Comprehensive logging with log levels
+- ✅ Unit test coverage
+- 🔧 Type-safe validation
+- 🎨 Clean code structure
+- 📚 Full documentation
+
+### 🚀 Quick Start
+
 1. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
-2. **Configure environment**
-   - Using OpenAI (default when `OPENAI_API_KEY` is present):
-     ```bash
-     export OPENAI_API_KEY="sk-..."
-     export OPENAI_MODEL="gpt-4o-mini"  # optional override
-     ```
-   - Using OpenRouter or another compatible provider:
-     ```bash
-     export OPENROUTER_API_KEY="sk-or-..."  # or OPENAI_API_KEY for other providers
-     export OPENAI_MODEL="qwen/Qwen2.5-72B-Instruct"  # optional override
-     export OPENROUTER_REFERER="https://yourapp.example.com"  # optional but recommended by OpenRouter
-     export OPENROUTER_APP_TITLE="Trading Agents MVP"
-     ```
-3. **Run the pipeline**
+
+2. **Configure API key**
    ```bash
-   python run.py AAPL --horizon 1w --context "Post-earnings consolidation"
+   export OPENAI_API_KEY="sk-..."
    ```
 
-The CLI prints the orchestrated recommendation and writes the signal contract to `signals/<symbol>_<timestamp>.json`.
+3. **Run analysis** (examples)
+   ```bash
+   # Basic analysis
+   python -m tradingagents.run AAPL
+
+   # With specific date and horizon
+   python -m tradingagents.run MSFT --date 2024-01-15 --horizon 1w
+
+   # With market context
+   python -m tradingagents.run NVDA --context "Post-earnings volatility"
+
+   # Enable debug logging
+   python -m tradingagents.run GOOGL --log-level DEBUG
+
+   # Use offline data (no API calls)
+   python -m tradingagents.run TSLA --offline-data
+   ```
+
+4. **View results**
+   - Console output with detailed analysis
+   - JSON signal saved to `signals/<symbol>_<timestamp>.json`
+   - Logs in `logs/` directory (if configured)
 
 ### Using Local Models (Recommended for Training)
 

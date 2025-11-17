@@ -115,12 +115,13 @@ def get_stock_price_data_local(
         price_change_5d_str = f"{price_change_5d:+.2f}%" if price_change_5d is not None else "N/A"
         price_change_30d_str = f"{price_change_30d:+.2f}%" if price_change_30d is not None else "N/A"
         sma_50_str = f"${sma_50:.2f}" if not pd.isna(sma_50) else "N/A"
-        
+        sma_20_diff_str = f"{((current_price / sma_20 - 1) * 100):+.2f}%" if not pd.isna(sma_20) else "N/A"
+
         actual_date = target_row['Date']
         date_note = ""
         if trade_date and str(actual_date) != trade_date:
             date_note = f"\nNote: {trade_date} not found. Using most recent trading day: {actual_date}"
-        
+
         report = f"""
 === {symbol_upper} Price Data (Offline Dataset) ===
 Analysis Date: {trade_date or actual_date}{date_note}
@@ -141,7 +142,7 @@ Volume:
 Technical Indicators:
   - 20-day MA (SMA20): ${sma_20:.2f}
   - 50-day MA (SMA50): {sma_50_str}
-  - Price vs SMA20: {((current_price / sma_20 - 1) * 100):+.2f}% if not pd.isna(sma_20) else "N/A"
+  - Price vs SMA20: {sma_20_diff_str}
 
 Last 10 Trading Days:
 """

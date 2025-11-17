@@ -40,7 +40,7 @@ class AnalysisRequest:
 class AgentProposal:
     """
     Proposal from a single agent.
-    
+
     Attributes:
         agent: Agent name (e.g., 'news', 'technical', 'fundamental')
         action: Recommended action ('BUY', 'SELL', 'HOLD')
@@ -48,6 +48,8 @@ class AgentProposal:
         thesis: Main argument/thesis
         evidence: List of supporting evidence
         neutral: Whether this is a neutral/fallback proposal
+        raw_response: Raw LLM response (for debugging/analysis)
+        caveats: List of caveats or warnings
     """
     agent: str
     action: str
@@ -55,11 +57,35 @@ class AgentProposal:
     thesis: str
     evidence: List[str] = field(default_factory=list)
     neutral: bool = False
-    
+    raw_response: str = ""
+    caveats: List[str] = field(default_factory=list)
+
     def __post_init__(self):
         self.action = self.action.upper()
         self.conviction = max(0.0, min(1.0, self.conviction))  # Clamp to [0, 1]
-    
+
+    def ensure_policy_compliance(self) -> 'AgentProposal':
+        """
+        Ensure proposal meets policy requirements.
+        If evidence is missing but action is not HOLD, downgrade to neutral HOLD.
+
+        Returns:
+            Self (for chaining) or new neutral proposal if non-compliant
+        """
+        if not self.evidence and self.action != "HOLD":
+            # Downgrade to neutral HOLD if no evidence
+            return AgentProposal(
+                agent=self.agent,
+                action="HOLD",
+                conviction=0.5,
+                thesis=f"Insufficient evidence for {self.action} recommendation",
+                evidence=[],
+                neutral=True,
+                raw_response=self.raw_response,
+                caveats=["Downgraded due to lack of supporting evidence"]
+            )
+        return self
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return asdict(self)
@@ -117,7 +143,7 @@ class EvaluationResult:
 class DebateRecord:
     """
     Record of debate process.
-    
+
     Attributes:
         rounds: Number of debate rounds
         history: Complete debate history
@@ -126,7 +152,84 @@ class DebateRecord:
     rounds: int = 0
     history: List[Dict[str, Any]] = field(default_factory=list)
     converged: bool = False
-    
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
+        return asdict(self)
+
+
+@dataclass
+class DebateTranscript:
+    """
+    Transcript of agent debate.
+
+    Attributes:
+        rounds: Number of debate rounds completed
+        exchanges: List of debate exchanges
+        final_positions: Final positions of each agent
+        consensus_reached: Whether consensus was achieved
+    """
+    rounds: int = 0
+    exchanges: List[Dict[str, Any]] = field(default_factory=list)
+    final_positions: Dict[str, AgentProposal] = field(default_factory=dict)
+    consensus_reached: bool = False
+
+    def add_exchange(self, round_num: int, agent: str, message: str, proposal: Optional[AgentProposal] = None):
+        """Add a debate exchange."""
+        exchange = {
+            "round": round_num,
+            "agent": agent,
+            "message": message,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        if proposal:
+            exchange["proposal"] = proposal.to_dict()
+        self.exchanges.append(exchange)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            "rounds": self.rounds,
+            "exchanges": self.exchanges,
+            "final_positions": {k: v.to_dict() for k, v in self.final_positions.items()},
+            "consensus_reached": self.consensus_reached
+        }
+
+
+@dataclass
+class PositionChange:
+    """
+    Represents a change in agent's position during debate.
+
+    Attributes:
+        agent: Agent name
+        old_action: Previous action
+        new_action: New action
+        old_conviction: Previous conviction
+        new_conviction: New conviction
+        reason: Reason for change
+    """
+    agent: str
+    old_action: str
+    new_action: str
+    old_conviction: float
+    new_conviction: float
+    reason: str = ""
+
+    def __post_init__(self):
+        self.old_action = self.old_action.upper()
+        self.new_action = self.new_action.upper()
+
+    @property
+    def action_changed(self) -> bool:
+        """Whether the action recommendation changed."""
+        return self.old_action != self.new_action
+
+    @property
+    def conviction_delta(self) -> float:
+        """Change in conviction level."""
+        return self.new_conviction - self.old_conviction
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return asdict(self)
@@ -201,23 +304,36 @@ class FinalDecision:
     def save(self, output_dir: Path) -> Path:
         """
         Save decision to JSON file.
-        
+
         Args:
             output_dir: Directory to save to
-            
+
         Returns:
             Path to saved file
         """
         output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{self.symbol.lower()}_{timestamp}.json"
         filepath = output_dir / filename
-        
+
         with open(filepath, 'w') as f:
             f.write(self.to_json())
-        
+
         return filepath
+
+    def write_signal(self, signals_dir: Path) -> Path:
+        """
+        Write trading signal to signals directory.
+        Alias for save() method for backward compatibility.
+
+        Args:
+            signals_dir: Directory to save signal to
+
+        Returns:
+            Path to saved signal file
+        """
+        return self.save(signals_dir)
 
 
 @dataclass
